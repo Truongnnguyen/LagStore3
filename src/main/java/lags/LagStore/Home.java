@@ -10,6 +10,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.plaf.basic.BasicButtonUI;
+import lags.view.BanHang;
 //import lags.view.BanHangform;
 import lags.view.GiamGiaform;
 import lags.view.HoaDonpannel;
@@ -411,7 +412,7 @@ public class Home extends javax.swing.JFrame {
 
     private void btnBanHangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBanHangActionPerformed
         // TODO add your handling code here:
-//        setform(new BanHangform());
+        setform(new BanHang());
     }//GEN-LAST:event_btnBanHangActionPerformed
 
     private void btnGiamGiaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGiamGiaActionPerformed

@@ -9,6 +9,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import lags.entity.HoaDon;
 import lags.entity.SanPham;
@@ -169,5 +170,34 @@ public class HoaDonDao {
         }
         return list;
     }
+    public List<HoaDon> locTheoNgay(Date tuNgay, Date denNgay) {
+    List<HoaDon> list = new ArrayList<>();
+    String sql = "SELECT * FROM HoaDon WHERE NgayTao BETWEEN ? AND ?";
+    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setDate(1, new java.sql.Date(tuNgay.getTime()));
+        ps.setDate(2, new java.sql.Date(denNgay.getTime()));
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            HoaDon hd = new HoaDon();
+            hd.setMaHD(rs.getString("MaHD"));
+            hd.setMaKH(rs.getString("MaKH"));
+            hd.setMaNV(rs.getString("MaNV"));
+            hd.setTenKHNhan(rs.getString("TenKHNhan"));
+            hd.setDiaChiNguoiNhan(rs.getString("DiaChiNguoiNhan"));
+            hd.setSoDienThoaiNguoiNhan(rs.getString("SoDienThoaiNguoiNhan"));
+            hd.setThanhTien(rs.getInt("ThanhTien"));
+            hd.setTrangThai(rs.getInt("TrangThai"));
+            hd.setIdKhuyenMai(rs.getString("idKhuyenMai"));
+            hd.setLoaiGiam(rs.getInt("LoaiGiam"));
+            hd.setGiaTriGiam(rs.getInt("GiaTriGiam"));
+            hd.setNgayTao(rs.getDate("NgayTao"));
+            list.add(hd);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
     
 }
