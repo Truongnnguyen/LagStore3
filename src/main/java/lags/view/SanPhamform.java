@@ -28,6 +28,7 @@ import lags.util.XDialog;
 import lags.view.LinhKien.CpuJDialog;
 import lags.view.LinhKien.DungLuongJDialog;
 import lags.view.LinhKien.GPUJDialog;
+import lags.view.LinhKien.IMEIJDialog;
 import lags.view.LinhKien.RamJDialog;
 import lags.view.LinhKien.XuatXuJDialog;
 
@@ -113,6 +114,7 @@ public class SanPhamform extends javax.swing.JPanel {
         jLabel14 = new javax.swing.JLabel();
         txtSoLuong = new javax.swing.JTextField();
         txtGia = new javax.swing.JTextField();
+        jButton1 = new javax.swing.JButton();
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -315,6 +317,11 @@ public class SanPhamform extends javax.swing.JPanel {
         });
 
         btnXoaSPCT.setText("Xóa SP");
+        btnXoaSPCT.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaSPCTActionPerformed(evt);
+            }
+        });
 
         jLabel12.setText("Mã Sản Phẩm");
 
@@ -361,6 +368,13 @@ public class SanPhamform extends javax.swing.JPanel {
 
         jLabel14.setText("Số Lượng");
 
+        jButton1.setText("Làm mới");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
@@ -368,6 +382,9 @@ public class SanPhamform extends javax.swing.JPanel {
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGap(6, 6, 6)
                         .addComponent(btnThemSPCT)
@@ -464,7 +481,9 @@ public class SanPhamform extends javax.swing.JPanel {
                             .addComponent(txtGia, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel14, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(txtSoLuong, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(45, 45, 45))
+                        .addGap(18, 18, 18)
+                        .addComponent(jButton1)
+                        .addGap(4, 4, 4))
                     .addGroup(jPanel2Layout.createSequentialGroup()
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -527,11 +546,13 @@ public class SanPhamform extends javax.swing.JPanel {
             this.fillSPCT();
 
         }
-
     }//GEN-LAST:event_tblSanPhamMouseClicked
 
     private void btnSuaSPCTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaSPCTActionPerformed
         // TODO add your handling code here:
+        this.updateSPCT();
+        this.fillSPCT();
+        
     }//GEN-LAST:event_btnSuaSPCTActionPerformed
 
     private void btnCPUActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCPUActionPerformed
@@ -572,19 +593,34 @@ public class SanPhamform extends javax.swing.JPanel {
 
     private void btnCIMEIActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCIMEIActionPerformed
         // TODO add your handling code here:
+//        StringBuilder imei = new StringBuilder();
+//        Random rand = new Random();
+//
+//        txtIMEI.setText("");
+//        for (int i = 0; i <= 15; i++) {
+//            imei.append(rand.nextInt(10));
+//        }
+//        txtIMEI.setText(imei.toString());
+        String MaSPCT = txtMaSPCT.getText();
+        IMEIJDialog dialog = new IMEIJDialog((java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this), true);
+//        dialog.setForm(MaSPCT);
+        dialog.fillTable(MaSPCT);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
 
-        StringBuilder imei = new StringBuilder();
-        Random rand = new Random();
 
-        txtIMEI.setText("");
-        for (int i = 0; i <= 15; i++) {
-            imei.append(rand.nextInt(10));
-        }
-        txtIMEI.setText(imei.toString());
     }//GEN-LAST:event_btnCIMEIActionPerformed
 
     private void btnThemSPCTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemSPCTActionPerformed
         // TODO add your handling code here:
+        this.createSPCT();
+        this.fillSPCT();
+        String MaSPCT = txtMaSPCT.getText();
+        IMEIJDialog dialog = new IMEIJDialog((java.awt.Frame) javax.swing.SwingUtilities.getWindowAncestor(this), true);
+        dialog.setFormC(MaSPCT);
+        dialog.setLocationRelativeTo(this);
+        dialog.setVisible(true);
+        
     }//GEN-LAST:event_btnThemSPCTActionPerformed
 
     private void btnXuatXuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXuatXuActionPerformed
@@ -612,6 +648,18 @@ public class SanPhamform extends javax.swing.JPanel {
         this.fillSanPham();
     }//GEN-LAST:event_btnXoaSPActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        this.fillSPCT();
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void btnXoaSPCTActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaSPCTActionPerformed
+        // TODO add your handling code here:
+        this.deleteSPCT();
+        this.fillSPCT();
+        
+    }//GEN-LAST:event_btnXoaSPCTActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCIMEI;
@@ -631,6 +679,7 @@ public class SanPhamform extends javax.swing.JPanel {
     private javax.swing.JComboBox<String> cboGPU;
     private javax.swing.JComboBox<String> cboRAM;
     private javax.swing.JComboBox<String> cboXuatXu;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
@@ -687,8 +736,8 @@ public class SanPhamform extends javax.swing.JPanel {
 
         DefaultTableModel model = (DefaultTableModel) tblSanPham.getModel();
         model.setRowCount(0);
-        List<SanPham> lstSP = daoSP.findAll();
-        XuatXuDao daoXX=new XuatXuDao();
+        lstSP = daoSP.findAll();
+        XuatXuDao daoXX = new XuatXuDao();
         List<XuatXu> lstXX = daoXX.findAll(); // hoặc lưu sẵn ở biến toàn cục nếu dùng nhiều
 
         for (SanPham item : lstSP) {
@@ -715,6 +764,7 @@ public class SanPhamform extends javax.swing.JPanel {
 //        for (Object[] x : list) {
 //            model.addRow(x);
 //        }
+
         lstTtSP = daoSPCT.findByMaSP(txtMaSP.getText());
         lstTtSP.forEach(item -> {
             model.addRow(new Object[]{
@@ -870,5 +920,29 @@ public class SanPhamform extends javax.swing.JPanel {
         entity.setSoLuong(Integer.parseInt(txtSoLuong.getText()));
 
         return entity;
+    }
+
+    public void createSPCT() {
+        SanPhamChiTiet entity = this.getForm1();
+        daoSPCT.create(entity);
+        this.fillSPCT();
+    }
+
+    public void updateSPCT() {
+        SanPhamChiTiet entity = this.getForm1();
+        daoSPCT.update(entity);
+        this.fillSanPham();
+    }
+
+    public void deleteSPCT() {
+        if (XDialog.confirm("Bạn thực sự muốn xóa")) {
+            String id = txtMaSPCT.getText();
+            daoSPCT.deleteByID(id);
+            this.fillSPCT();
+        }
+    }
+
+    public void MaSPCTforIM() {
+        String mSPCT = txtMaSPCT.getText();
     }
 }

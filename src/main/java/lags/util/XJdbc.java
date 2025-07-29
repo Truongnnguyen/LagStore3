@@ -1,17 +1,10 @@
 package lags.util;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import javax.xml.transform.Source;
 
 /**
  * Lớp tiện ích hỗ trợ làm việc với CSDL quan hệ
@@ -33,7 +26,6 @@ public class XJdbc {
         var dburl = "jdbc:sqlserver://localhost;database=LagStore;encrypt=true;trustServerCertificate=true;";
         var username = "sa";
         var password = "123456";
-        //sử dụng dữ liệu này khi đi thi chỉ thay đổi dữ liệu ở trong database thôi
         try {
             if (!XJdbc.isReady()) {
                 Class.forName(driver);
@@ -141,21 +133,16 @@ public class XJdbc {
         }
         return stmt;
     }
-    
-    
 
     public static void main(String[] args) {
         demo1();
         demo2();
         demo3();
-        
-        
     }
 
     private static void demo1() {
         String sql = "SELECT * FROM Drinks WHERE UnitPrice BETWEEN ? AND ?";
         var rs = XJdbc.executeQuery(sql, 1.5, 5.0);
-        
     }
 
     private static void demo2() {
@@ -167,14 +154,4 @@ public class XJdbc {
         String sql = "DELETE FROM Drinks WHERE UnitPrice < ?";
         var count = XJdbc.executeUpdate(sql, 0.0);
     }
-
-    
-
-    
-
-   
-    
-    
-    
-   
 }

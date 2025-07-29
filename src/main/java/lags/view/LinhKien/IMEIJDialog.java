@@ -4,6 +4,13 @@
  */
 package lags.view.LinhKien;
 
+import java.util.List;
+import javax.swing.table.DefaultTableModel;
+import lags.dao.IMEIDao;
+import lags.entity.IMEI;
+import lags.util.XDialog;
+import lags.view.SanPhamform;
+
 /**
  *
  * @author icebear
@@ -13,6 +20,9 @@ public class IMEIJDialog extends javax.swing.JDialog {
     /**
      * Creates new form IMEIJDialog
      */
+    IMEIDao dao = new IMEIDao();
+    List<IMEI> lstIM = List.of();
+    
     public IMEIJDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
@@ -29,6 +39,16 @@ public class IMEIJDialog extends javax.swing.JDialog {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        txtMaIMEI = new javax.swing.JTextField();
+        txtMaSPCT = new javax.swing.JTextField();
+        jLabel4 = new javax.swing.JLabel();
+        txtSoIMEI = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblIMEI = new javax.swing.JTable();
+        btnThem = new javax.swing.JButton();
+        btnSua = new javax.swing.JButton();
+        btnXoa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -36,7 +56,50 @@ public class IMEIJDialog extends javax.swing.JDialog {
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("IMEI");
 
-        jLabel2.setText("jLabel2");
+        jLabel2.setText("Mã IMEI");
+
+        jLabel3.setText("Mã SPCT");
+
+        jLabel4.setText("Số IMEI");
+
+        tblIMEI.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Mã IMEI", "Mã SPCT", "Số Imei"
+            }
+        ));
+        tblIMEI.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblIMEIMouseClicked(evt);
+            }
+        });
+        jScrollPane1.setViewportView(tblIMEI);
+
+        btnThem.setText("Thêm");
+        btnThem.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemActionPerformed(evt);
+            }
+        });
+
+        btnSua.setText("Sửa");
+        btnSua.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSuaActionPerformed(evt);
+            }
+        });
+
+        btnXoa.setText("Xóa");
+        btnXoa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnXoaActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -44,21 +107,78 @@ public class IMEIJDialog extends javax.swing.JDialog {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(81, 81, 81)
-                .addComponent(jLabel2)
-                .addContainerGap(572, Short.MAX_VALUE))
+                .addGap(64, 64, 64)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnThem)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSua)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnXoa))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane1)
+                        .addGroup(layout.createSequentialGroup()
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jLabel3))
+                            .addGap(18, 18, 18)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(txtMaIMEI)
+                                .addComponent(txtMaSPCT, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGap(49, 49, 49)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                            .addComponent(txtSoIMEI, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(64, 64, 64))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 97, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 409, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMaIMEI)
+                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtSoIMEI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtMaSPCT, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnThem)
+                    .addComponent(btnSua)
+                    .addComponent(btnXoa))
+                .addGap(36, 36, 36))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tblIMEIMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblIMEIMouseClicked
+        // TODO add your handling code here:
+        int row = tblIMEI.getSelectedRow();
+        String ma = tblIMEI.getValueAt(row, 1).toString();
+        this.setForm(ma, row);
+    }//GEN-LAST:event_tblIMEIMouseClicked
+
+    private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
+        // TODO add your handling code here:
+        this.create();
+    }//GEN-LAST:event_btnThemActionPerformed
+
+    private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
+        // TODO add your handling code here:
+        this.update();
+    }//GEN-LAST:event_btnSuaActionPerformed
+
+    private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
+        // TODO add your handling code here:
+        this.delete();
+    }//GEN-LAST:event_btnXoaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -103,7 +223,76 @@ public class IMEIJDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnSua;
+    private javax.swing.JButton btnThem;
+    private javax.swing.JButton btnXoa;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tblIMEI;
+    private javax.swing.JTextField txtMaIMEI;
+    private javax.swing.JTextField txtMaSPCT;
+    private javax.swing.JTextField txtSoIMEI;
     // End of variables declaration//GEN-END:variables
+
+    public void fillTable(String MaSpct) {
+        DefaultTableModel model = (DefaultTableModel) tblIMEI.getModel();
+        model.setRowCount(0);
+
+        lstIM = dao.findAll();
+        lstIM.forEach(item -> {
+            if (item.getMaSPCT().equals(MaSpct)) {
+                model.addRow(new Object[]{
+                    item.getMaIMEI(),
+                    item.getMaSPCT(),
+                    item.getSoIMEI()
+                });
+            }
+        });
+
+    }
+
+    public void setForm(String MaSpct, int row) {
+        txtMaIMEI.setText(tblIMEI.getValueAt(row, 0).toString());
+        txtMaSPCT.setText(tblIMEI.getValueAt(row, 1).toString());
+        txtSoIMEI.setText(tblIMEI.getValueAt(row, 2).toString());
+
+    }
+    
+    public void setFormC(String MaSPCT){
+        txtMaSPCT.setText(MaSPCT);
+    }
+    
+    public IMEI getForm(){
+        IMEI entity = new IMEI();
+        entity.setMaIMEI(txtMaIMEI.getText());
+        entity.setMaSPCT(txtMaSPCT.getText());
+        entity.setSoIMEI(txtSoIMEI.getText());
+        
+        return entity;
+    }
+    
+    public void create(){
+        IMEI entity = this.getForm();
+        dao.create(entity);
+        this.fillTable(entity.getMaSPCT());
+        
+    }
+    
+    public void update(){
+        IMEI entity = this.getForm();
+        dao .update(entity);
+        this.fillTable(txtMaSPCT.getText());
+    }
+    
+    public void delete(){
+        if(XDialog.confirm("Bạn thực sự muốn xóa")){
+            String id = txtMaIMEI.getText();
+            dao.deleteByID(id);
+            this.fillTable(txtMaSPCT.getText());
+        }
+    }
+
 }

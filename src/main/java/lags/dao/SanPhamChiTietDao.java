@@ -321,7 +321,7 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
     }
 
     public void create(SanPhamChiTiet entity) {
-        String sql = "INSERT INTO CPU (MaCPU, TenCPU) VALUES (?, ?)";
+        String sql = "INSERT INTO SanPhamChiTiet (MaSPCT, MaSP, MaCPU, MaRAM, MaDungLuong, MaGPU, Gia, SoLuong) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         Object[] values = {
             entity.getMaSPCT(),
@@ -334,6 +334,30 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
             entity.getSoLuong()
         };
         XJdbc.executeUpdate(sql, values);
+    }
+    
+    public void update(SanPhamChiTiet entity){
+        String sql = "UPDATE SanPhamChiTiet SET MaSP = ?, MaCPU = ?, MaRAM = ?, MaDungLuong = ?, MaGPU = ?, Gia = ?, SoLuong = ? WHERE MaSPCT =?";
+        
+        Object[] values = {
+            entity.getMaSP(),
+            entity.getMaCPU(),
+            entity.getMaRAM(),
+            entity.getMaDungLuong(),
+            entity.getMaGPU(),
+            entity.getGia(),
+            entity.getSoLuong(),
+            entity.getMaSPCT()
+        };
+        XJdbc.executeUpdate(sql, values);
+    }
+    
+    public void deleteByID(String MaSPCT){
+        String sql = "DELETE FROM IMEI WHERE MaSPCT = ?";
+        String sql1 = "DELETE FROM SanPhamChiTiet WHERE MaSPCT = ?";
+        
+        XJdbc.executeUpdate(sql, MaSPCT);
+        XJdbc.executeUpdate(sql1, MaSPCT);
     }
 
 }
