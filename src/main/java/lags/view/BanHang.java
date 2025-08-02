@@ -154,9 +154,9 @@ public class BanHang extends javax.swing.JPanel {
         btnHuy = new javax.swing.JButton();
         jLabel10 = new javax.swing.JLabel();
         txtDiaChi = new javax.swing.JTextField();
-        jButton1 = new javax.swing.JButton();
+        btnTimHoaDon = new javax.swing.JButton();
         txtTimKiemHoaDon = new javax.swing.JTextField();
-        jButton2 = new javax.swing.JButton();
+        btnTimSanPham = new javax.swing.JButton();
         txtTimKiemSanPham = new javax.swing.JTextField();
 
         setForeground(new java.awt.Color(0, 255, 255));
@@ -454,25 +454,25 @@ public class BanHang extends javax.swing.JPanel {
                 .addContainerGap(113, Short.MAX_VALUE))
         );
 
-        jButton1.setBackground(new java.awt.Color(102, 102, 102));
-        jButton1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton1.setForeground(new java.awt.Color(255, 255, 255));
-        jButton1.setText("Tìm kiếm");
-        jButton1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        btnTimHoaDon.setBackground(new java.awt.Color(102, 102, 102));
+        btnTimHoaDon.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnTimHoaDon.setForeground(new java.awt.Color(255, 255, 255));
+        btnTimHoaDon.setText("Tìm kiếm");
+        btnTimHoaDon.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnTimHoaDon.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                btnTimHoaDonActionPerformed(evt);
             }
         });
 
-        jButton2.setBackground(new java.awt.Color(102, 102, 102));
-        jButton2.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jButton2.setForeground(new java.awt.Color(255, 255, 255));
-        jButton2.setText("Tìm Kiếm");
-        jButton2.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        btnTimSanPham.setBackground(new java.awt.Color(102, 102, 102));
+        btnTimSanPham.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        btnTimSanPham.setForeground(new java.awt.Color(255, 255, 255));
+        btnTimSanPham.setText("Tìm Kiếm");
+        btnTimSanPham.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        btnTimSanPham.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                btnTimSanPhamActionPerformed(evt);
             }
         });
 
@@ -485,7 +485,7 @@ public class BanHang extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnTimSanPham, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtTimKiemSanPham, javax.swing.GroupLayout.PREFERRED_SIZE, 308, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(0, 0, Short.MAX_VALUE))
@@ -501,7 +501,7 @@ public class BanHang extends javax.swing.JPanel {
                                 .addGap(18, 18, 18))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(6, 6, 6)
-                                .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(btnTimHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtTimKiemHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -520,7 +520,7 @@ public class BanHang extends javax.swing.JPanel {
                         .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, 145, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton1)
+                            .addComponent(btnTimHoaDon)
                             .addComponent(txtTimKiemHoaDon, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -529,7 +529,7 @@ public class BanHang extends javax.swing.JPanel {
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
+                    .addComponent(btnTimSanPham)
                     .addComponent(txtTimKiemSanPham, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -698,7 +698,7 @@ public class BanHang extends javax.swing.JPanel {
         // TODO add your handling code here:
     }//GEN-LAST:event_cboLoaiThanhToanActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void btnTimHoaDonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimHoaDonActionPerformed
         // TODO add your handling code here:
         this.timHoaDon();
         String key = txtTimKiemHoaDon.getText();
@@ -715,12 +715,12 @@ public class BanHang extends javax.swing.JPanel {
                 x[0], x[1], x[2], x[3], x[4], x[5], trangThaiText
             });
         }
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_btnTimHoaDonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void btnTimSanPhamActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTimSanPhamActionPerformed
         // TODO add your handling code here:
         this.timSanPham();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_btnTimSanPhamActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -728,10 +728,10 @@ public class BanHang extends javax.swing.JPanel {
     private javax.swing.JButton btnSua;
     private javax.swing.JButton btnTaoHoaDon;
     private javax.swing.JButton btnThanhToan;
+    private javax.swing.JButton btnTimHoaDon;
+    private javax.swing.JButton btnTimSanPham;
     private javax.swing.JButton btnXoa;
     private javax.swing.JComboBox<String> cboLoaiThanhToan;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
