@@ -359,5 +359,16 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
         XJdbc.executeUpdate(sql, MaSPCT);
         XJdbc.executeUpdate(sql1, MaSPCT);
     }
+    public void capNhatSoLuong(String maSPCT, int soLuongMoi) {
+    String sql = "UPDATE SanPhamChiTiet SET SoLuong = ? WHERE MaSPCT = ?";
+    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setInt(1, soLuongMoi);
+        ps.setString(2, maSPCT);
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
+
 
 }

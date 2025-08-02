@@ -145,9 +145,17 @@ public class HoaDonDao {
     public List<Object[]> timKiemHoaDon(String keyword) {
         List<Object[]> list = new ArrayList<>();
         String sql = """
-        SELECT hd.MaHD, hd.TenKHNhan, hd.SoDienThoaiNguoiNhan, hd.NgayTao, hd.TrangThai
-        FROM HoaDon hd
-        WHERE hd.MaHD LIKE ? OR hd.TenKHNhan LIKE ? OR hd.SoDienThoaiNguoiNhan LIKE ?
+            SELECT 
+                    hd.MaHD, 
+                    nv.TenNV, 
+                    hd.NgayTao, 
+                    hd.TenKHNhan,
+                    hd.SoDienThoaiNguoiNhan,
+                    hd.DiaChiNguoiNhan,
+                    hd.TrangThai
+                FROM HoaDon hd
+                JOIN NhanVien nv ON nv.MaNV = hd.MaNV
+                WHERE hd.MaHD LIKE ? OR hd.TenKHNhan LIKE ? OR hd.SoDienThoaiNguoiNhan LIKE ?
     """;
         try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
             String key = "%" + keyword + "%";
@@ -158,9 +166,11 @@ public class HoaDonDao {
             while (rs.next()) {
                 Object[] row = {
                     rs.getString("MaHD"),
+                    rs.getString("TenNV"),
+                    rs.getDate("NgayTao"),
                     rs.getString("TenKHNhan"),
                     rs.getString("SoDienThoaiNguoiNhan"),
-                    rs.getDate("NgayTao"),
+                    rs.getString("DiaChiNguoiNhan"),
                     rs.getInt("TrangThai")
                 };
                 list.add(row);
@@ -170,34 +180,34 @@ public class HoaDonDao {
         }
         return list;
     }
-    public List<HoaDon> locTheoNgay(Date tuNgay, Date denNgay) {
-    List<HoaDon> list = new ArrayList<>();
-    String sql = "SELECT * FROM HoaDon WHERE NgayTao BETWEEN ? AND ?";
-    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setDate(1, new java.sql.Date(tuNgay.getTime()));
-        ps.setDate(2, new java.sql.Date(denNgay.getTime()));
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            HoaDon hd = new HoaDon();
-            hd.setMaHD(rs.getString("MaHD"));
-            hd.setMaKH(rs.getString("MaKH"));
-            hd.setMaNV(rs.getString("MaNV"));
-            hd.setTenKHNhan(rs.getString("TenKHNhan"));
-            hd.setDiaChiNguoiNhan(rs.getString("DiaChiNguoiNhan"));
-            hd.setSoDienThoaiNguoiNhan(rs.getString("SoDienThoaiNguoiNhan"));
-            hd.setThanhTien(rs.getInt("ThanhTien"));
-            hd.setTrangThai(rs.getInt("TrangThai"));
-            hd.setIdKhuyenMai(rs.getString("idKhuyenMai"));
-            hd.setLoaiGiam(rs.getInt("LoaiGiam"));
-            hd.setGiaTriGiam(rs.getInt("GiaTriGiam"));
-            hd.setNgayTao(rs.getDate("NgayTao"));
-            list.add(hd);
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return list;
-}
 
-    
+    public List<HoaDon> locTheoNgay(Date tuNgay, Date denNgay) {
+        List<HoaDon> list = new ArrayList<>();
+        String sql = "SELECT * FROM HoaDon WHERE NgayTao BETWEEN ? AND ?";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(tuNgay.getTime()));
+            ps.setDate(2, new java.sql.Date(denNgay.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                HoaDon hd = new HoaDon();
+                hd.setMaHD(rs.getString("MaHD"));
+                hd.setMaKH(rs.getString("MaKH"));
+                hd.setMaNV(rs.getString("MaNV"));
+                hd.setTenKHNhan(rs.getString("TenKHNhan"));
+                hd.setDiaChiNguoiNhan(rs.getString("DiaChiNguoiNhan"));
+                hd.setSoDienThoaiNguoiNhan(rs.getString("SoDienThoaiNguoiNhan"));
+                hd.setThanhTien(rs.getInt("ThanhTien"));
+                hd.setTrangThai(rs.getInt("TrangThai"));
+                hd.setIdKhuyenMai(rs.getString("idKhuyenMai"));
+                hd.setLoaiGiam(rs.getInt("LoaiGiam"));
+                hd.setGiaTriGiam(rs.getInt("GiaTriGiam"));
+                hd.setNgayTao(rs.getDate("NgayTao"));
+                list.add(hd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
 }

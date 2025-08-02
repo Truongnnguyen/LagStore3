@@ -24,9 +24,7 @@ public class SanPhamDao {
     public List<SanPham> selectAll() {
         List<SanPham> list = new ArrayList<>();
         String sql = "SELECT * FROM SanPham";
-        try (Connection conn = XJdbc.openConnection();
-                PreparedStatement ps = conn.prepareStatement(sql); 
-                ResultSet rs = ps.executeQuery()) {
+        try (Connection conn = XJdbc.openConnection(); PreparedStatement ps = conn.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 SanPham sp = new SanPham(
                         rs.getString("MaSP"),
@@ -41,19 +39,26 @@ public class SanPhamDao {
         }
         return list;
     }
-    
-    public List<SanPham> findAll(){
+
+    public List<SanPham> findAll() {
         String sql = "SELECT * FROM SanPham";
         return XQuery.getBeanList(SanPham.class, sql);
     }
+
     public List<Object[]> timKiemSanPham(String keyword) {
     List<Object[]> list = new ArrayList<>();
     String sql = """
-        SELECT sp.MaSP, sp.TenSP, ct.MaSPCT, ct.GiaBan, ct.SoLuongTon
-        FROM SanPham sp
-        JOIN SanPhamChiTiet ct ON sp.MaSP = ct.MaSP
+        SELECT 
+            spct.MaSPCT, sp.MaSP, sp.TenSP,
+            spct.MaCPU, spct.MaRAM, spct.MaDungLuong, spct.MaGPU,
+            imei.SoIMEI,
+            spct.Gia, spct.SoLuong
+        FROM SanPhamChiTiet spct
+        JOIN SanPham sp ON sp.MaSP = spct.MaSP
+        LEFT JOIN IMEI imei ON imei.MaSPCT = spct.MaSPCT
         WHERE sp.MaSP LIKE ? OR sp.TenSP LIKE ?
     """;
+
     try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
         String key = "%" + keyword + "%";
         ps.setString(1, key);
@@ -61,11 +66,16 @@ public class SanPhamDao {
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
             Object[] row = {
+                rs.getString("MaSPCT"),
                 rs.getString("MaSP"),
                 rs.getString("TenSP"),
-                rs.getString("MaSPCT"),
-                rs.getInt("GiaBan"),
-                rs.getInt("SoLuongTon")
+                rs.getString("MaCPU"),
+                rs.getString("MaRAM"),
+                rs.getString("MaDungLuong"),
+                rs.getString("MaGPU"),
+                rs.getString("SoIMEI"),
+                rs.getInt("Gia"),
+                rs.getInt("SoLuong")
             };
             list.add(row);
         }
@@ -75,22 +85,22 @@ public class SanPhamDao {
     return list;
 }
 
-    
-    public void create(SanPham entity){
+
+    public void create(SanPham entity) {
         String sql = "INSERT INTO SanPham (MaSP, MaXuatXu, TenSP) VALUES (?, ?, ?)";
-        
+
         Object[] values = {
             entity.getMaSP(),
             entity.getMaXuatXu(),
             entity.getTenSP()
-            
+
         };
         XJdbc.executeUpdate(sql, values);
     }
-    
-    public void update(SanPham entity){
+
+    public void update(SanPham entity) {
         String sql = "UPDATE SanPham SET MaXuatXu = ?, TenSP = ? WHERE MaSP=?";
-        
+
         Object[] values = {
             entity.getMaXuatXu(),
             entity.getTenSP(),
@@ -98,11 +108,11 @@ public class SanPhamDao {
         };
         XJdbc.executeUpdate(sql, values);
     }
-    
-    public void deleteByID(String MaSP){
+
+    public void deleteByID(String MaSP) {
         String sql = "DELETE FROM SanPham WHERE MaSP=?";
-        
+
         XJdbc.executeUpdate(sql, MaSP);
     }
-    
+
 }
