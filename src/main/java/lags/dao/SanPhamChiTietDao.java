@@ -335,10 +335,10 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
         };
         XJdbc.executeUpdate(sql, values);
     }
-    
-    public void update(SanPhamChiTiet entity){
+
+    public void update(SanPhamChiTiet entity) {
         String sql = "UPDATE SanPhamChiTiet SET MaSP = ?, MaCPU = ?, MaRAM = ?, MaDungLuong = ?, MaGPU = ?, Gia = ?, SoLuong = ? WHERE MaSPCT =?";
-        
+
         Object[] values = {
             entity.getMaSP(),
             entity.getMaCPU(),
@@ -351,24 +351,93 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
         };
         XJdbc.executeUpdate(sql, values);
     }
-    
-    public void deleteByID(String MaSPCT){
+
+    public void deleteByID(String MaSPCT) {
         String sql = "DELETE FROM IMEI WHERE MaSPCT = ?";
         String sql1 = "DELETE FROM SanPhamChiTiet WHERE MaSPCT = ?";
-        
+
         XJdbc.executeUpdate(sql, MaSPCT);
         XJdbc.executeUpdate(sql1, MaSPCT);
     }
+
     public void capNhatSoLuong(String maSPCT, int soLuongMoi) {
-    String sql = "UPDATE SanPhamChiTiet SET SoLuong = ? WHERE MaSPCT = ?";
+        String sql = "UPDATE SanPhamChiTiet SET SoLuong = ? WHERE MaSPCT = ?";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, soLuongMoi);
+            ps.setString(2, maSPCT);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public List<ThongTinSP> timKiemThongTinSP(String keyword) {
+    String sql = """
+        SELECT
+            spct.MaSPCT, spct.MaSP, spct.MaCPU, spct.MaRAM, spct.MaDungLuong, spct.MaGPU,
+            spct.Gia, spct.SoLuong,
+            sp.TenSP, sp.MaXuatXu,
+            xx.XuatXu,
+            cpu.TenCPU,
+            ram.TenRAM, ram.DungLuong AS DLRAM,
+            dl.DungLuong AS DLDL,
+            gpu.TenGPU,
+            im.SoIMEI
+        FROM SanPhamChiTiet spct
+        JOIN SanPham sp ON sp.MaSP = spct.MaSP
+        JOIN XuatXu xx ON xx.MaXuatXu = sp.MaXuatXu
+        JOIN CPU cpu ON cpu.MaCPU = spct.MaCPU
+        JOIN Ram ram ON ram.MaRAM = spct.MaRAM
+        JOIN DungLuong dl ON dl.MaDungLuong = spct.MaDungLuong
+        JOIN GPU gpu ON gpu.MaGPU = spct.MaGPU
+        JOIN IMEI im ON im.MaSPCT = spct.MaSPCT
+        WHERE 
+            spct.MaSPCT LIKE ? OR sp.MaSP LIKE ? OR sp.TenSP LIKE ? OR 
+            cpu.TenCPU LIKE ? OR ram.TenRAM LIKE ? OR ram.DungLuong LIKE ? OR
+            dl.DungLuong LIKE ? OR gpu.TenGPU LIKE ? OR im.SoIMEI LIKE ? OR
+            CAST(spct.Gia AS NVARCHAR) LIKE ? OR CAST(spct.SoLuong AS NVARCHAR) LIKE ?
+    """;
+
+    List<ThongTinSP> list = new ArrayList<>();
+
     try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-        ps.setInt(1, soLuongMoi);
-        ps.setString(2, maSPCT);
-        ps.executeUpdate();
+        String key = "%" + keyword + "%";
+        for (int i = 1; i <= 11; i++) {
+            ps.setString(i, key);
+        }
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            ThongTinSP info = new ThongTinSP();
+
+            CPU cpu = new CPU(rs.getString("MaCPU"), rs.getString("TenCPU"));
+            RAM ram = new RAM(rs.getString("MaRAM"), rs.getString("TenRAM"), rs.getString("DLRAM"));
+            DungLuong dl = new DungLuong(rs.getString("MaDungLuong"), rs.getString("DLDL"));
+            GPU gpu = new GPU(rs.getString("MaGPU"), rs.getString("TenGPU"));
+            XuatXu xx = new XuatXu(rs.getString("MaXuatXu"), rs.getString("XuatXu"));
+            SanPham sp = new SanPham(rs.getString("MaSP"), rs.getString("MaXuatXu"), rs.getString("TenSP"));
+            SanPhamChiTiet spct = new SanPhamChiTiet(
+                rs.getString("MaSPCT"), sp.getMaSP(), cpu.getMaCPU(),
+                ram.getMaRAM(), dl.getMaDungLuong(), gpu.getMaGPU(),
+                rs.getInt("Gia"), rs.getInt("SoLuong")
+            );
+
+            info.setSpct(spct);
+            info.setSanPham(sp);
+            info.setCpu(cpu);
+            info.setRam(ram);
+            info.setDungLuong(dl);
+            info.setGpu(gpu);
+            info.setSoIMEI(rs.getString("SoIMEI"));
+            info.setXuatXu(xx);
+
+            list.add(info);
+        }
+
     } catch (Exception e) {
         e.printStackTrace();
     }
-}
 
+    return list;
+}
 
 }

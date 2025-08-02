@@ -143,43 +143,57 @@ public class HoaDonDao {
     }
 
     public List<Object[]> timKiemHoaDon(String keyword) {
-        List<Object[]> list = new ArrayList<>();
-        String sql = """
-            SELECT 
-                    hd.MaHD, 
-                    nv.TenNV, 
-                    hd.NgayTao, 
-                    hd.TenKHNhan,
-                    hd.SoDienThoaiNguoiNhan,
-                    hd.DiaChiNguoiNhan,
-                    hd.TrangThai
-                FROM HoaDon hd
-                JOIN NhanVien nv ON nv.MaNV = hd.MaNV
-                WHERE hd.MaHD LIKE ? OR hd.TenKHNhan LIKE ? OR hd.SoDienThoaiNguoiNhan LIKE ?
+    List<Object[]> list = new ArrayList<>();
+    String sql = """
+        SELECT 
+            hd.MaHD, 
+            nv.TenNV, 
+            hd.NgayTao, 
+            hd.TenKHNhan,
+            hd.SoDienThoaiNguoiNhan,
+            hd.DiaChiNguoiNhan,
+            hd.TrangThai
+        FROM HoaDon hd
+        JOIN NhanVien nv ON nv.MaNV = hd.MaNV
+        WHERE 
+            hd.MaHD LIKE ? OR
+            nv.TenNV LIKE ? OR
+            CONVERT(VARCHAR, hd.NgayTao, 23) LIKE ? OR
+            hd.TenKHNhan LIKE ? OR
+            hd.SoDienThoaiNguoiNhan LIKE ? OR
+            hd.DiaChiNguoiNhan LIKE ? OR
+              CASE 
+                  WHEN hd.TrangThai = 0 THEN N'Chưa thanh toán'
+                  WHEN hd.TrangThai = 1 THEN N'Đã thanh toán'
+              END LIKE ?
     """;
-        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-            String key = "%" + keyword + "%";
-            ps.setString(1, key);
-            ps.setString(2, key);
-            ps.setString(3, key);
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                Object[] row = {
-                    rs.getString("MaHD"),
-                    rs.getString("TenNV"),
-                    rs.getDate("NgayTao"),
-                    rs.getString("TenKHNhan"),
-                    rs.getString("SoDienThoaiNguoiNhan"),
-                    rs.getString("DiaChiNguoiNhan"),
-                    rs.getInt("TrangThai")
-                };
-                list.add(row);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+        String key = "%" + keyword + "%";
+        for (int i = 1; i <= 7; i++) {
+            ps.setString(i, key);
         }
-        return list;
+
+        ResultSet rs = ps.executeQuery();
+        while (rs.next()) {
+            Object[] row = {
+                rs.getString("MaHD"),
+                rs.getString("TenNV"),
+                rs.getDate("NgayTao"),
+                rs.getString("TenKHNhan"),
+                rs.getString("SoDienThoaiNguoiNhan"),
+                rs.getString("DiaChiNguoiNhan"),
+                rs.getInt("TrangThai")
+            };
+            list.add(row);
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+
+    return list;
+}
+
 
     public List<HoaDon> locTheoNgay(Date tuNgay, Date denNgay) {
         List<HoaDon> list = new ArrayList<>();

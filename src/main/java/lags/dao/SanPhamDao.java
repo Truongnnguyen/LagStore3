@@ -45,45 +45,57 @@ public class SanPhamDao {
         return XQuery.getBeanList(SanPham.class, sql);
     }
 
-    public List<Object[]> timKiemSanPham(String keyword) {
-    List<Object[]> list = new ArrayList<>();
-    String sql = """
-        SELECT 
-            spct.MaSPCT, sp.MaSP, sp.TenSP,
-            spct.MaCPU, spct.MaRAM, spct.MaDungLuong, spct.MaGPU,
-            imei.SoIMEI,
-            spct.Gia, spct.SoLuong
-        FROM SanPhamChiTiet spct
-        JOIN SanPham sp ON sp.MaSP = spct.MaSP
-        LEFT JOIN IMEI imei ON imei.MaSPCT = spct.MaSPCT
-        WHERE sp.MaSP LIKE ? OR sp.TenSP LIKE ?
-    """;
+//    public List<Object[]> timKiemSanPham(String keyword) {
+//    List<Object[]> list = new ArrayList<>();
+//    String sql = """
+//        SELECT 
+//            spct.MaSPCT, sp.MaSP, sp.TenSP,
+//            spct.MaCPU, spct.MaRAM, spct.MaDungLuong, spct.MaGPU,
+//            imei.SoIMEI,
+//            spct.Gia, spct.SoLuong
+//        FROM SanPhamChiTiet spct
+//        JOIN SanPham sp ON sp.MaSP = spct.MaSP
+//        LEFT JOIN IMEI imei ON imei.MaSPCT = spct.MaSPCT
+//        WHERE 
+//            spct.MaSPCT LIKE ? OR
+//            sp.MaSP LIKE ? OR
+//            sp.TenSP LIKE ? OR
+//            spct.MaCPU LIKE ? OR
+//            spct.MaRAM LIKE ? OR
+//            spct.MaDungLuong LIKE ? OR
+//            spct.MaGPU LIKE ? OR
+//            imei.SoIMEI LIKE ? OR
+//            CAST(spct.Gia AS NVARCHAR) LIKE ? OR
+//            CAST(spct.SoLuong AS NVARCHAR) LIKE ?
+//    """;
+//
+//    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+//        String key = "%" + keyword + "%";
+//        for (int i = 1; i <= 10; i++) {
+//            ps.setString(i, key);
+//        }
+//        ResultSet rs = ps.executeQuery();
+//        while (rs.next()) {
+//            Object[] row = {
+//                rs.getString("MaSPCT"),
+//                rs.getString("MaSP"),
+//                rs.getString("TenSP"),
+//                rs.getString("MaCPU"),
+//                rs.getString("MaRAM"),
+//                rs.getString("MaDungLuong"),
+//                rs.getString("MaGPU"),
+//                rs.getString("SoIMEI"),
+//                rs.getInt("Gia"),
+//                rs.getInt("SoLuong")
+//            };
+//            list.add(row);
+//        }
+//    } catch (Exception e) {
+//        e.printStackTrace();
+//    }
+//    return list;
+//}
 
-    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-        String key = "%" + keyword + "%";
-        ps.setString(1, key);
-        ps.setString(2, key);
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Object[] row = {
-                rs.getString("MaSPCT"),
-                rs.getString("MaSP"),
-                rs.getString("TenSP"),
-                rs.getString("MaCPU"),
-                rs.getString("MaRAM"),
-                rs.getString("MaDungLuong"),
-                rs.getString("MaGPU"),
-                rs.getString("SoIMEI"),
-                rs.getInt("Gia"),
-                rs.getInt("SoLuong")
-            };
-            list.add(row);
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
-    }
-    return list;
-}
 
 
     public void create(SanPham entity) {
