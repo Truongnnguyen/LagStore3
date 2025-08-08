@@ -7,6 +7,7 @@ package lags.dao;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
@@ -125,26 +126,31 @@ public class HoaDonDao {
     }
 
     public String generateMaHD() {
-        String sql = "SELECT MAX(MaHD) FROM HoaDon";
-        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            if (rs.next()) {
-                String maxMa = rs.getString(1);
-                if (maxMa == null) {
-                    return "HD001";
-                }
+    String sql = "SELECT MAX(CAST(SUBSTRING(MaHD, 3, LEN(MaHD)) AS INT)) FROM HoaDon";
+    try (Connection c = XJdbc.openConnection();
+         PreparedStatement ps = c.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
 
-                int number = Integer.parseInt(maxMa.replace("HD", ""));
-                return String.format("HD%03d", number + 1);
+        int max = 0;
+        if (rs.next()) {
+            max = rs.getInt(1);
+            if (rs.wasNull()) {
+                max = 0; // bảng rỗng
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
-        return "HD001";
+
+        return String.format("HD%02d", max + 1);
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+        throw new RuntimeException("Generate MaHD failed", e);
     }
+}
+
 
     public List<Object[]> timKiemHoaDon(String keyword) {
-    List<Object[]> list = new ArrayList<>();
-    String sql = """
+        List<Object[]> list = new ArrayList<>();
+        String sql = """
         SELECT 
             hd.MaHD, 
             nv.TenNV, 
@@ -168,32 +174,31 @@ public class HoaDonDao {
               END LIKE ?
     """;
 
-    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-        String key = "%" + keyword + "%";
-        for (int i = 1; i <= 7; i++) {
-            ps.setString(i, key);
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            String key = "%" + keyword + "%";
+            for (int i = 1; i <= 7; i++) {
+                ps.setString(i, key);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Object[] row = {
+                    rs.getString("MaHD"),
+                    rs.getString("TenNV"),
+                    rs.getDate("NgayTao"),
+                    rs.getString("TenKHNhan"),
+                    rs.getString("SoDienThoaiNguoiNhan"),
+                    rs.getString("DiaChiNguoiNhan"),
+                    rs.getInt("TrangThai")
+                };
+                list.add(row);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        ResultSet rs = ps.executeQuery();
-        while (rs.next()) {
-            Object[] row = {
-                rs.getString("MaHD"),
-                rs.getString("TenNV"),
-                rs.getDate("NgayTao"),
-                rs.getString("TenKHNhan"),
-                rs.getString("SoDienThoaiNguoiNhan"),
-                rs.getString("DiaChiNguoiNhan"),
-                rs.getInt("TrangThai")
-            };
-            list.add(row);
-        }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return list;
     }
-
-    return list;
-}
-
 
     public List<HoaDon> locTheoNgay(Date tuNgay, Date denNgay) {
         List<HoaDon> list = new ArrayList<>();
@@ -222,6 +227,31 @@ public class HoaDonDao {
             e.printStackTrace();
         }
         return list;
+    }
+
+    public void updateHoaDonSauThanhToan(String maHD, int thanhTien, String idKhuyenMai, int loaiGiam, int giaTriGiam) {
+        String sql = """
+        UPDATE HoaDon
+        SET 
+            ThanhTien = ?, 
+            idKhuyenMai = ?, 
+            LoaiGiam = ?, 
+            GiaTriGiam = ?, 
+            TrangThai = 1
+        WHERE MaHD = ?
+    """;
+
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, thanhTien);
+            ps.setString(2, idKhuyenMai);
+            ps.setInt(3, loaiGiam);
+            ps.setInt(4, giaTriGiam);
+            ps.setString(5, maHD);
+
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

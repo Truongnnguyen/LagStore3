@@ -1,71 +1,50 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package lags.entity;
 
-/**
- *
- * @author icebear
- */
+
 public class KhachHang {
-    public String maKH;
-    public String tenKH;
-    public String diaChi;
-    public String soDienThoai;
-    public String email;
+    private String maKH;
+    private String tenKH;
+    private String diaChi;
+    private String soDienThoai;
+    private String email;
+    private int trangThai; // 0 = Đang hoạt động, 1 = Ngừng hoạt động, 2 = Khóa
 
     public KhachHang() {
     }
 
-    public KhachHang(String maKH, String tenKH, String diaChi, String soDienThoai, String email) {
+    public KhachHang(String maKH, String tenKH, String diaChi, String soDienThoai, String email, int trangThai) {
         this.maKH = maKH;
         this.tenKH = tenKH;
         this.diaChi = diaChi;
         this.soDienThoai = soDienThoai;
         this.email = email;
+        this.trangThai = trangThai;
     }
 
-    public String getMaKH() {
-        return maKH;
-    }
+    public String getMaKH() { return maKH; }
+    public void setMaKH(String maKH) { this.maKH = maKH; }
 
-    public void setMaKH(String maKH) {
-        this.maKH = maKH;
-    }
+    public String getTenKH() { return tenKH; }
+    public void setTenKH(String tenKH) { this.tenKH = tenKH; }
 
-    public String getTenKH() {
-        return tenKH;
-    }
+    public String getDiaChi() { return diaChi; }
+    public void setDiaChi(String diaChi) { this.diaChi = diaChi; }
 
-    public void setTenKH(String tenKH) {
-        this.tenKH = tenKH;
-    }
+    public String getSoDienThoai() { return soDienThoai; }
+    public void setSoDienThoai(String soDienThoai) { this.soDienThoai = soDienThoai; }
 
-    public String getDiaChi() {
-        return diaChi;
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setDiaChi(String diaChi) {
-        this.diaChi = diaChi;
-    }
+    public int getTrangThai() { return trangThai; }
+    public void setTrangThai(int trangThai) { this.trangThai = trangThai; }
 
-    public String getSoDienThoai() {
-        return soDienThoai;
+    public String getTrangThaiText() {
+        return switch (trangThai) {
+            case 0 -> "Đang hoạt động";
+            case 1 -> "Ngừng hoạt động";
+            case 2 -> "Đã khóa";
+            default -> "Không xác định";
+        };
     }
-
-    public void setSoDienThoai(String soDienThoai) {
-        this.soDienThoai = soDienThoai;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    
-    
 }
