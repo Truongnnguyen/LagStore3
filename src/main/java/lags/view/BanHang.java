@@ -973,12 +973,11 @@ public class BanHang extends javax.swing.JPanel {
         // TODO add your handling code here:
         // ✅ Trả lại IMEI giữ chỗ khi hủy
         // Trả lại IMEI giữ chỗ
-java.util.List<String> allImeis = new java.util.ArrayList<>();
-for (java.util.Set<String> imeis : cartImeis.values()) {
-    allImeis.addAll(imeis);
-}
-imeiDao.releaseImeis(allImeis);
-
+        java.util.List<String> allImeis = new java.util.ArrayList<>();
+        for (java.util.Set<String> imeis : cartImeis.values()) {
+            allImeis.addAll(imeis);
+        }
+        imeiDao.releaseImeis(allImeis);
 
         this.huyDonHang();
         this.maHDDangTao = null;
@@ -997,41 +996,41 @@ imeiDao.releaseImeis(allImeis);
 
     private void tblHoaDonChoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHoaDonChoMouseClicked
         // TODO add your handling code here:
-          int row = tblHoaDonCho.getSelectedRow();
-    if (row == -1) {
-        return;
-    }
+        int row = tblHoaDonCho.getSelectedRow();
+        if (row == -1) {
+            return;
+        }
 
-    // Lấy mã HĐ từ bảng
-    String maHD = tblHoaDonCho.getValueAt(row, 0).toString();
-    maHDDangTao = maHD;
+        // Lấy mã HĐ từ bảng
+        String maHD = tblHoaDonCho.getValueAt(row, 0).toString();
+        maHDDangTao = maHD;
 
-    // Lấy thông tin hóa đơn + khách hàng
-    HoaDon hd = dao.findById(maHD);
-    if (hd != null) {
-        txtKH.setText(hd.getTenKHNhan() != null ? hd.getTenKHNhan() : "");
-        txtSDT.setText(hd.getSoDienThoaiNguoiNhan() != null ? hd.getSoDienThoaiNguoiNhan() : "");
-        txtDiaChi.setText(hd.getDiaChiNguoiNhan() != null ? hd.getDiaChiNguoiNhan() : "");
+        // Lấy thông tin hóa đơn + khách hàng
+        HoaDon hd = dao.findById(maHD);
+        if (hd != null) {
+            txtKH.setText(hd.getTenKHNhan() != null ? hd.getTenKHNhan() : "");
+            txtSDT.setText(hd.getSoDienThoaiNguoiNhan() != null ? hd.getSoDienThoaiNguoiNhan() : "");
+            txtDiaChi.setText(hd.getDiaChiNguoiNhan() != null ? hd.getDiaChiNguoiNhan() : "");
 //        txtEmail.setText(hd.getEmailNguoiNhan() != null ? hd.getEmailNguoiNhan() : "");
-    }
+        }
 
-    // Load giỏ hàng
-    DefaultTableModel modelGH = (DefaultTableModel) tblGioHang.getModel();
-    modelGH.setRowCount(0);
-    HoaDonChiTietDao hdctDao = new HoaDonChiTietDao();
-    List<Object[]> chiTietList = hdctDao.getChiTietByMaHD(maHD);
-    for (Object[] ct : chiTietList) {
-        String maSP = (String) ct[0];
-        String tenSP = (String) ct[1];
-        int soLuong = (int) ct[2];
-        int donGia = (int) ct[3];
-        modelGH.addRow(new Object[]{
-            maSP, tenSP, soLuong, formatVND(donGia * soLuong), Boolean.FALSE
-        });
-    }
+        // Load giỏ hàng
+        DefaultTableModel modelGH = (DefaultTableModel) tblGioHang.getModel();
+        modelGH.setRowCount(0);
+        HoaDonChiTietDao hdctDao = new HoaDonChiTietDao();
+        List<Object[]> chiTietList = hdctDao.getChiTietByMaHD(maHD);
+        for (Object[] ct : chiTietList) {
+            String maSP = (String) ct[0];
+            String tenSP = (String) ct[1];
+            int soLuong = (int) ct[2];
+            int donGia = (int) ct[3];
+            modelGH.addRow(new Object[]{
+                maSP, tenSP, soLuong, formatVND(donGia * soLuong), Boolean.FALSE
+            });
+        }
 
-    updateTongTien();
-    updateInvoiceUIState();
+        updateTongTien();
+        updateInvoiceUIState();
     }//GEN-LAST:event_tblHoaDonChoMouseClicked
 
 

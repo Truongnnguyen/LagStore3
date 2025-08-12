@@ -292,6 +292,8 @@ public class KhachHangDaoImpl implements KhachHangDao {
     return null; // Không tìm thấy
     }
 
+    
+    
     @Override
     public KhachHang findGuest() {
        String sql = "SELECT TOP 1 MaKH, TenKH, SoDienThoai, DiaChi, Email, TrangThai " +
