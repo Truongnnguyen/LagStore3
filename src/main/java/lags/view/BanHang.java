@@ -1038,7 +1038,7 @@ imeiDao.releaseImeis(allImeis);
             spct.MaSP,
             sp.TenSP,
             cpu.TenCPU,
-            ram.TenRAM,
+            ram.DungLuong as DLR,
             dl.DungLuong,
             gpu.TenGPU,
             spct.Gia,
@@ -1057,8 +1057,8 @@ imeiDao.releaseImeis(allImeis);
             spct.MaSP, 
             sp.TenSP, 
             cpu.TenCPU, 
-            ram.TenRAM, 
-            dl.DungLuong, 
+            ram.DungLuong, 
+            dl.DungLuong,
             gpu.TenGPU, 
             spct.Gia
         ORDER BY spct.MaSPCT
@@ -1072,7 +1072,7 @@ imeiDao.releaseImeis(allImeis);
                     rs.getString("MaSP"),
                     rs.getString("TenSP"),
                     rs.getString("TenCPU"),
-                    rs.getString("TenRAM"),
+                    rs.getString("DLR"),
                     rs.getString("DungLuong"),
                     rs.getString("TenGPU"),
                     rs.getInt("Gia"),
