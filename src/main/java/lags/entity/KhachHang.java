@@ -1,6 +1,5 @@
 package lags.entity;
 
-
 public class KhachHang {
     private String maKH;
     private String tenKH;
@@ -43,7 +42,6 @@ public class KhachHang {
         return switch (trangThai) {
             case 0 -> "Đang hoạt động";
             case 1 -> "Ngừng hoạt động";
-            case 2 -> "Đã khóa";
             default -> "Không xác định";
         };
     }

@@ -29,4 +29,10 @@ public interface KhachHangDao {
 
 // ✅ THÊM MỚI VÀO:
     String insertAndGetMaKH(KhachHang kh);
+     KhachHang findByPhone(String sdt);   // <-- Thêm dòng này
+     KhachHang findGuest(); // TenKH='Khách vãng lai' & SoDienThoai IS NULL (hoặc theo quy ước của bạn)
+     
+     
+     
+     
 }

@@ -4,6 +4,7 @@
  */
 package lags.entity;
 
+
 import java.util.Date;
 
 /**
@@ -11,11 +12,13 @@ import java.util.Date;
  * @author icebear
  */
 public class KhuyenMai {
+
     public String idKhuyenMai;
+    public String tenKhuyenMai;
     public int loaiGiam;
     public int giaTriGiam;
     public int giamToiDa;
-    public String dkApDung;
+    public int dkApDung;
     public int trangThai;
     public Date ngayTao;
     public Date ngayHetHan;
@@ -23,8 +26,9 @@ public class KhuyenMai {
     public KhuyenMai() {
     }
 
-    public KhuyenMai(String idKhuyenMai, int loaiGiam, int giaTriGiam, int giamToiDa, String dkApDung, int trangThai, Date ngayTao, Date ngayHetHan) {
+    public KhuyenMai(String idKhuyenMai, String tenKhuyenMai, int loaiGiam, int giaTriGiam, int giamToiDa, int dkApDung, int trangThai, Date ngayTao, Date ngayHetHan) {
         this.idKhuyenMai = idKhuyenMai;
+        this.tenKhuyenMai = tenKhuyenMai;
         this.loaiGiam = loaiGiam;
         this.giaTriGiam = giaTriGiam;
         this.giamToiDa = giamToiDa;
@@ -40,6 +44,14 @@ public class KhuyenMai {
 
     public void setIdKhuyenMai(String idKhuyenMai) {
         this.idKhuyenMai = idKhuyenMai;
+    }
+
+    public String getTenKhuyenMai() {
+        return tenKhuyenMai;
+    }
+
+    public void setTenKhuyenMai(String tenKhuyenMai) {
+        this.tenKhuyenMai = tenKhuyenMai;
     }
 
     public int getLoaiGiam() {
@@ -66,11 +78,11 @@ public class KhuyenMai {
         this.giamToiDa = giamToiDa;
     }
 
-    public String getDkApDung() {
+    public int getDkApDung() {
         return dkApDung;
     }
 
-    public void setDkApDung(String dkApDung) {
+    public void setDkApDung(int dkApDung) {
         this.dkApDung = dkApDung;
     }
 
@@ -97,8 +109,21 @@ public class KhuyenMai {
     public void setNgayHetHan(Date ngayHetHan) {
         this.ngayHetHan = ngayHetHan;
     }
+    
 
-    
-    
-    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

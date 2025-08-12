@@ -4,6 +4,7 @@
  */
 package lags.LagStore;
 
+
 /**
  *
  * @author icebear
@@ -12,7 +13,8 @@ public class LagStore {
     public static void main(String[] args) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new Home().setVisible(true);
+                Home hm = new Home();
+                new Login(hm).setVisible(true);
             }
         });
     }

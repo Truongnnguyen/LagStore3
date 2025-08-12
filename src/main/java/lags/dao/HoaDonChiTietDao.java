@@ -101,22 +101,22 @@ public class HoaDonChiTietDao {
         }
         return false;
     }
+
     public String generateMaHDCT() {
-    String sql = "SELECT MAX(idHDCT) FROM HoaDonChiTiet";
-    try (Connection c = XJdbc.openConnection();
-         PreparedStatement ps = c.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        // Tách phần số từ idHDCT và lấy số lớn nhất
+        String sql = "SELECT MAX(CAST(SUBSTRING(idHDCT, 5, LEN(idHDCT) - 4) AS INT)) FROM HoaDonChiTiet";
+        try (Connection c = XJdbc.openConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
 
-        if (rs.next() && rs.getString(1) != null) {
-            String lastId = rs.getString(1); // VD: "HDCT5"
-            int so = Integer.parseInt(lastId.replace("HDCT", ""));
-            return "HDCT" + (so + 1);
+            if (rs.next()) {
+                int maxSo = rs.getInt(1); // Lấy số lớn nhất
+                if (maxSo > 0) {
+                    return "HDCT" + (maxSo + 1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    } catch (Exception e) {
-        e.printStackTrace();
+        return "HDCT1"; // Nếu bảng trống hoặc lỗi thì trả về HDCT1
     }
-    return "HDCT1"; // Trường hợp bảng đang trống
-}
-
 
 }

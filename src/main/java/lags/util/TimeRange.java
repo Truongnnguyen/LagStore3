@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package lags.util;
+
 import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;

@@ -4,6 +4,7 @@
  */
 package lags.entity;
 
+
 public class TopItem {
     private String id;
     private String ten;

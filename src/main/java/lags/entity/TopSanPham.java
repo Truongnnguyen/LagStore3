@@ -4,6 +4,7 @@
  */
 package lags.entity;
 
+
 public class TopSanPham {
     private String maSP;
     private String tenSP;

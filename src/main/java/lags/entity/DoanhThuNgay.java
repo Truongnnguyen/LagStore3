@@ -4,6 +4,7 @@
  */
 package lags.entity;
 
+
 import java.sql.Date;
 
 public class DoanhThuNgay {

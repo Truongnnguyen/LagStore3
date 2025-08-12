@@ -4,11 +4,14 @@
  */
 package lags.view.LinhKien;
 
+
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import lags.dao.XuatXuDao;
 import lags.entity.XuatXu;
 import lags.util.XDialog;
+import lags.view.SanPhamform;
 
 /**
  *
@@ -19,9 +22,11 @@ public class XuatXuJDialog extends javax.swing.JDialog {
     /**
      * Creates new form XuatXuJDialog
      */
-    public XuatXuJDialog(java.awt.Frame parent, boolean modal) {
+    private SanPhamform spf;
+    public XuatXuJDialog(java.awt.Frame parent, boolean modal, SanPhamform spf) {
         super(parent, modal);
         initComponents();
+        this.spf = spf;
         this.fillToTable();
         this.setForm(0);
     }
@@ -45,14 +50,22 @@ public class XuatXuJDialog extends javax.swing.JDialog {
         btnThem = new javax.swing.JButton();
         btnSua = new javax.swing.JButton();
         btnXoa = new javax.swing.JButton();
+        btnTaoMa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel1.setText("Xuất Xứ");
 
         jLabel2.setText("Mã xuất xứ");
+
+        txtMaXX.setEditable(false);
 
         jLabel3.setText("Xuất Xứ");
 
@@ -95,32 +108,39 @@ public class XuatXuJDialog extends javax.swing.JDialog {
             }
         });
 
+        btnTaoMa.setText("Tạo Mã");
+        btnTaoMa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTaoMaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
+                .addGap(50, 50, 50)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(100, 100, 100)
+                        .addComponent(btnThem)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSua)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnXoa))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 537, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtMaXX, javax.swing.GroupLayout.PREFERRED_SIZE, 133, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(38, 38, 38)
+                        .addComponent(txtMaXX, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnTaoMa)
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtXuatXu, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(50, 50, 50)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnThem)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnSua)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnXoa))
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 537, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(txtXuatXu, javax.swing.GroupLayout.PREFERRED_SIZE, 118, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(50, 50, 50))
         );
         layout.setVerticalGroup(
@@ -128,12 +148,16 @@ public class XuatXuJDialog extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtMaXX, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtXuatXu))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtMaXX, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(txtXuatXu))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(btnTaoMa, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 320, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -170,52 +194,64 @@ public class XuatXuJDialog extends javax.swing.JDialog {
         this.fillToTable();
     }//GEN-LAST:event_btnXoaActionPerformed
 
+    private void btnTaoMaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoMaActionPerformed
+        // TODO add your handling code here:
+        txtMaXX.setText(generateMaSPCT());
+    }//GEN-LAST:event_btnTaoMaActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        spf.open();
+    }//GEN-LAST:event_formWindowClosed
+
     /**
      * @param args the command line arguments
      */
     XuatXuDao dao = new XuatXuDao();
     List<XuatXu> lstXX = List.of();
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
 
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                XuatXuJDialog dialog = new XuatXuJDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(XuatXuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the dialog */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                XuatXuJDialog dialog = new XuatXuJDialog(new javax.swing.JFrame(), true);
+//                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+//                    @Override
+//                    public void windowClosing(java.awt.event.WindowEvent e) {
+//                        System.exit(0);
+//                    }
+//                });
+//                dialog.setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSua;
+    private javax.swing.JButton btnTaoMa;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnXoa;
     private javax.swing.JLabel jLabel1;
@@ -227,10 +263,10 @@ public class XuatXuJDialog extends javax.swing.JDialog {
     private javax.swing.JTextField txtXuatXu;
     // End of variables declaration//GEN-END:variables
 
-    public void fillToTable(){
+    public void fillToTable() {
         DefaultTableModel model = (DefaultTableModel) tblXuatXu.getModel();
         model.setRowCount(0);
-        
+
         lstXX = dao.findAll();
         lstXX.forEach(item -> {
             model.addRow(new Object[]{
@@ -238,34 +274,50 @@ public class XuatXuJDialog extends javax.swing.JDialog {
                 item.getXuatXu()
             });
         });
-        
+
     }
-    
-    public void setForm(int row){
+
+    public void setForm(int row) {
         txtMaXX.setText((tblXuatXu.getValueAt(row, 0)).toString());
         txtXuatXu.setText(tblXuatXu.getValueAt(row, 1).toString());
     }
-    
-    public XuatXu getForm(){
+
+    public XuatXu getForm() {
         XuatXu entity = new XuatXu();
         entity.setMaXuatXu(txtMaXX.getText());
         entity.setXuatXu(txtXuatXu.getText());
         return entity;
     }
 
-    public void create(){
-        XuatXu entity=this.getForm();
+    public void create() {
+        if (txtMaXX.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã xuất xứ không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtXuatXu.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Xuất xứ không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        XuatXu entity = this.getForm();
         dao.create(entity);
         this.fillToTable();
     }
-    
-    public void update(){
-        XuatXu entity=this.getForm();
+
+    public void update() {
+        if (txtMaXX.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã xuất xứ không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtXuatXu.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Xuất xứ không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        XuatXu entity = this.getForm();
         dao.update(entity);
         this.fillToTable();
     }
-    
-    public void delete(){
+
+    public void delete() {
         if (XDialog.confirm("Bạn thực sự muốn xóa?")) {
             String id = txtMaXX.getText();
             dao.deleteByID(id);
@@ -273,6 +325,25 @@ public class XuatXuJDialog extends javax.swing.JDialog {
         }
     }
 
+    private String generateMaSPCT() {
+        List<XuatXu> list = dao.findAll(); // lấy tất cả sản phẩm từ DB
+        int maxNumber = 0;
 
+        for (XuatXu xx : list) {
+            String ma = xx.getMaXuatXu(); // ví dụ: "SP12"
+            if (ma.toUpperCase().startsWith("X")) {
+                try {
+                    int number = Integer.parseInt(ma.substring(1));
+                    if (number > maxNumber) {
+                        maxNumber = number;
+                    }
+                } catch (NumberFormatException e) {
+                    // Bỏ qua mã sai định dạng
+                }
+            }
+        }
+
+        return "X" + (maxNumber + 1);
+    }
 
 }

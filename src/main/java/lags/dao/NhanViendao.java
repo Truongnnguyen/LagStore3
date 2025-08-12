@@ -5,6 +5,7 @@
 package lags.dao;
 
 
+
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +106,12 @@ public class NhanViendao {
         };
         return XQuery.getBeanList(NhanVien.class, findByNameSql, values);
     }
-
-
+    
+    public List<NhanVien> findByTND(String TDN){
+        String sql = "select * from NhanVien where TenDangNhap = ?";
+        
+        return XQuery.getBeanList(NhanVien.class, sql, TDN);
+    }
+    
     
 }

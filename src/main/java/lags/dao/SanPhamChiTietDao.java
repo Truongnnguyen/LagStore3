@@ -224,28 +224,27 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
 
     public List<ThongTinSP> findByMaSP(String maSP) {
         String sql = """
-        SELECT
-            spct.MaSPCT, spct.MaSP, spct.MaCPU, spct.MaRAM, spct.MaDungLuong, spct.MaGPU,
-            spct.Gia, spct.SoLuong,
+                    SELECT
+                        spct.MaSPCT, spct.MaSP, spct.MaCPU, spct.MaRAM, spct.MaDungLuong, spct.MaGPU,
+                        spct.Gia, spct.SoLuong,
 
-            sp.TenSP, sp.MaXuatXu,
-            xx.XuatXu,
+                        sp.TenSP, sp.MaXuatXu,
+                        xx.XuatXu,
 
-            cpu.TenCPU,
-            ram.TenRAM, ram.DungLuong AS DLRAM,
-            dl.DungLuong AS DLDL,
-            gpu.TenGPU,
-            im.SoIMEI
-        FROM SanPhamChiTiet spct
-        JOIN SanPham sp ON sp.MaSP = spct.MaSP
-        JOIN XuatXu xx ON xx.MaXuatXu = sp.MaXuatXu
-        JOIN CPU cpu ON cpu.MaCPU = spct.MaCPU
-        JOIN Ram ram ON ram.MaRAM = spct.MaRAM
-        JOIN DungLuong dl ON dl.MaDungLuong = spct.MaDungLuong
-        JOIN GPU gpu ON gpu.MaGPU = spct.MaGPU
-        JOIN IMEI im ON im.MaSPCT = spct.MaSPCT
-        WHERE spct.MaSP = ?
-    """;
+                        cpu.TenCPU,
+                        ram.TenRAM, ram.DungLuong AS DLRAM,
+                        dl.DungLuong AS DLDL,
+                        gpu.TenGPU
+
+                    FROM SanPhamChiTiet spct
+                    JOIN SanPham sp ON sp.MaSP = spct.MaSP
+                    JOIN XuatXu xx ON xx.MaXuatXu = sp.MaXuatXu
+                    JOIN CPU cpu ON cpu.MaCPU = spct.MaCPU
+                    JOIN Ram ram ON ram.MaRAM = spct.MaRAM
+                    JOIN DungLuong dl ON dl.MaDungLuong = spct.MaDungLuong
+                    JOIN GPU gpu ON gpu.MaGPU = spct.MaGPU
+                    WHERE spct.MaSP = ?
+                    """;
 
         List<ThongTinSP> list = new ArrayList<>();
 
@@ -307,7 +306,6 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
                 info.setRam(ram);
                 info.setDungLuong(dl);
                 info.setGpu(gpu);
-                info.setSoIMEI(rs.getString("SoIMEI"));
                 info.setXuatXu(xx);
 
                 list.add(info);
@@ -370,8 +368,9 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
             e.printStackTrace();
         }
     }
+
     public List<ThongTinSP> timKiemThongTinSP(String keyword) {
-    String sql = """
+        String sql = """
         SELECT
             spct.MaSPCT, spct.MaSP, spct.MaCPU, spct.MaRAM, spct.MaDungLuong, spct.MaGPU,
             spct.Gia, spct.SoLuong,
@@ -397,47 +396,118 @@ public class SanPhamChiTietDao { //List<Object[]> chủ động tạo ra mảng 
             CAST(spct.Gia AS NVARCHAR) LIKE ? OR CAST(spct.SoLuong AS NVARCHAR) LIKE ?
     """;
 
-    List<ThongTinSP> list = new ArrayList<>();
+        List<ThongTinSP> list = new ArrayList<>();
 
-    try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
-        String key = "%" + keyword + "%";
-        for (int i = 1; i <= 11; i++) {
-            ps.setString(i, key);
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            String key = "%" + keyword + "%";
+            for (int i = 1; i <= 11; i++) {
+                ps.setString(i, key);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                ThongTinSP info = new ThongTinSP();
+
+                CPU cpu = new CPU(rs.getString("MaCPU"), rs.getString("TenCPU"));
+                RAM ram = new RAM(rs.getString("MaRAM"), rs.getString("TenRAM"), rs.getString("DLRAM"));
+                DungLuong dl = new DungLuong(rs.getString("MaDungLuong"), rs.getString("DLDL"));
+                GPU gpu = new GPU(rs.getString("MaGPU"), rs.getString("TenGPU"));
+                XuatXu xx = new XuatXu(rs.getString("MaXuatXu"), rs.getString("XuatXu"));
+                SanPham sp = new SanPham(rs.getString("MaSP"), rs.getString("MaXuatXu"), rs.getString("TenSP"));
+                SanPhamChiTiet spct = new SanPhamChiTiet(
+                        rs.getString("MaSPCT"), sp.getMaSP(), cpu.getMaCPU(),
+                        ram.getMaRAM(), dl.getMaDungLuong(), gpu.getMaGPU(),
+                        rs.getInt("Gia"), rs.getInt("SoLuong")
+                );
+
+                info.setSpct(spct);
+                info.setSanPham(sp);
+                info.setCpu(cpu);
+                info.setRam(ram);
+                info.setDungLuong(dl);
+                info.setGpu(gpu);
+                info.setSoIMEI(rs.getString("SoIMEI"));
+                info.setXuatXu(xx);
+
+                list.add(info);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
+        return list;
+    }
+
+    public void capNhatSoLuongTheoIMEI(String maSPCT) {
+        String sql = "UPDATE SanPhamChiTiet SET SoLuong = ("
+                + "SELECT COUNT(*) FROM IMEI WHERE MaSPCT = ?"
+                + ") WHERE MaSPCT = ?";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, maSPCT);
+            ps.setString(2, maSPCT);
+            ps.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public List<Object[]> getAllWithIMEI() {
+    String sql = """
+        SELECT 
+            spct.MaSPCT, 
+            spct.MaSP, 
+            sp.TenSP, 
+            cpu.TenCPU, 
+            ram.TenRAM, 
+            dl.DungLuong, 
+            gpu.TenGPU, 
+            spct.Gia,
+            COUNT(im.SoIMEI) AS SoLuong
+        FROM SanPhamChiTiet spct
+        JOIN SanPham sp ON sp.MaSP = spct.MaSP
+        JOIN CPU cpu ON cpu.MaCPU = spct.MaCPU
+        JOIN Ram ram ON ram.MaRAM = spct.MaRAM
+        JOIN DungLuong dl ON dl.MaDungLuong = spct.MaDungLuong
+        JOIN GPU gpu ON gpu.MaGPU = spct.MaGPU
+        LEFT JOIN IMEI im 
+            ON im.MaSPCT = spct.MaSPCT
+            AND (im.TrangThai = 0 OR im.TrangThai IS NULL) -- chỉ đếm IMEI chưa bán
+        GROUP BY 
+            spct.MaSPCT, 
+            spct.MaSP, 
+            sp.TenSP, 
+            cpu.TenCPU, 
+            ram.TenRAM, 
+            dl.DungLuong, 
+            gpu.TenGPU, 
+            spct.Gia
+        ORDER BY spct.MaSPCT
+    """;
+
+    List<Object[]> list = new ArrayList<>();
+    try (Connection con = XJdbc.openConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
         ResultSet rs = ps.executeQuery();
         while (rs.next()) {
-            ThongTinSP info = new ThongTinSP();
-
-            CPU cpu = new CPU(rs.getString("MaCPU"), rs.getString("TenCPU"));
-            RAM ram = new RAM(rs.getString("MaRAM"), rs.getString("TenRAM"), rs.getString("DLRAM"));
-            DungLuong dl = new DungLuong(rs.getString("MaDungLuong"), rs.getString("DLDL"));
-            GPU gpu = new GPU(rs.getString("MaGPU"), rs.getString("TenGPU"));
-            XuatXu xx = new XuatXu(rs.getString("MaXuatXu"), rs.getString("XuatXu"));
-            SanPham sp = new SanPham(rs.getString("MaSP"), rs.getString("MaXuatXu"), rs.getString("TenSP"));
-            SanPhamChiTiet spct = new SanPhamChiTiet(
-                rs.getString("MaSPCT"), sp.getMaSP(), cpu.getMaCPU(),
-                ram.getMaRAM(), dl.getMaDungLuong(), gpu.getMaGPU(),
-                rs.getInt("Gia"), rs.getInt("SoLuong")
-            );
-
-            info.setSpct(spct);
-            info.setSanPham(sp);
-            info.setCpu(cpu);
-            info.setRam(ram);
-            info.setDungLuong(dl);
-            info.setGpu(gpu);
-            info.setSoIMEI(rs.getString("SoIMEI"));
-            info.setXuatXu(xx);
-
-            list.add(info);
+            list.add(new Object[]{
+                rs.getString("MaSPCT"),
+                rs.getString("MaSP"),
+                rs.getString("TenSP"),
+                rs.getString("TenCPU"),
+                rs.getString("TenRAM"),
+                rs.getString("DungLuong"),
+                rs.getString("TenGPU"),
+                rs.getInt("Gia"),
+                rs.getInt("SoLuong")
+            });
         }
-
     } catch (Exception e) {
         e.printStackTrace();
     }
-
     return list;
 }
+
+
+
 
 }

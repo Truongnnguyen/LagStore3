@@ -1,19 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package lags.entity;
 
-/**
- *
- * @author admin
- */
 public class DoanhThuThang {
     private String thang; 
     private long doanhThuNet;
     private long tongGiam;
     private int soDon;
     private double aov;
+
+    // ✅ Constructor mặc định cần thiết cho DAO cũ
+    public DoanhThuThang() {
+    }
+
+    // ✅ Constructor dùng cho biểu đồ/thống kê tháng
+    public DoanhThuThang(String thang, long doanhThuNet) {
+        this.thang = thang;
+        this.doanhThuNet = doanhThuNet;
+    }
 
     public String getThang() { return thang; }
     public void setThang(String thang) { this.thang = thang; }

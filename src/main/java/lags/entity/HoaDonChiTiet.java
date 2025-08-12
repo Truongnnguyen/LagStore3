@@ -4,6 +4,7 @@
  */
 package lags.entity;
 
+
 /**
  *
  * @author icebear

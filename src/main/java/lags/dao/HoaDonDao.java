@@ -52,16 +52,13 @@ public class HoaDonDao {
     public List<Object[]> getDonHangCho() {
         String sql = """
         SELECT 
-            hd.MaHD, 
-            nv.TenNV, 
-            hd.NgayTao, 
-            hd.TenKHNhan,
-            hd.SoDienThoaiNguoiNhan,
-            hd.DiaChiNguoiNhan,
-            hd.TrangThai
-        FROM HoaDon hd 
-        JOIN NhanVien nv ON nv.MaNV = hd.MaNV
-        WHERE hd.TrangThai = 0 OR hd.TrangThai = 1
+                    hd.MaHD, nv.TenNV, hd.NgayTao, 
+                    hd.TenKHNhan, hd.SoDienThoaiNguoiNhan, hd.DiaChiNguoiNhan,
+                    hd.ThanhTien, hd.TrangThai, hd.idKhuyenMai, hd.LoaiGiam, hd.GiaTriGiam
+                FROM HoaDon hd 
+                JOIN NhanVien nv ON nv.MaNV = hd.MaNV
+                WHERE hd.TrangThai = 0          -- << chỉ lấy hóa đơn chờ
+                ORDER BY hd.NgayTao DESC
     """;
 
         List<Object[]> list = new ArrayList<>();
@@ -75,7 +72,11 @@ public class HoaDonDao {
                     rs.getString("TenKHNhan"),
                     rs.getString("SoDienThoaiNguoiNhan"),
                     rs.getString("DiaChiNguoiNhan"),
-                    rs.getInt("TrangThai")
+                    rs.getInt("ThanhTien"), // ✅ thêm
+                    rs.getInt("TrangThai"),
+                    rs.getString("idKhuyenMai"),
+                    rs.getInt("LoaiGiam"),
+                    rs.getInt("GiaTriGiam")
                 };
                 list.add(row);
             }
@@ -97,81 +98,88 @@ public class HoaDonDao {
     }
 
     public String insertHoaDon(HoaDon hd) {
-        String sql = "INSERT INTO HoaDon (MaHD, MaKH, MaNV, TenKHNhan, DiaChiNguoiNhan, SoDienThoaiNguoiNhan, ThanhTien, TrangThai, idKhuyenMai, LoaiGiam, GiaTriGiam, NgayTao) "
-                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+    // Lưu ý: cột đúng là SoDienThoaiNguoiNhan (không phải SoDTNguoiNhan)
+    String sql = """
+        INSERT INTO HoaDon 
+        (MaHD, MaKH, MaNV, TenKHNhan, DiaChiNguoiNhan, SoDienThoaiNguoiNhan, 
+         ThanhTien, TrangThai, idKhuyenMai, LoaiGiam, GiaTriGiam, NgayTao)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """;
 
-        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+    try (Connection con = XJdbc.openConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
 
-            ps.setString(1, hd.getMaHD()); // 👈 thêm MaHD truyền từ Java
+        ps.setString(1, hd.getMaHD());
+
+        // MaKH của bạn là kiểu NVARCHAR (ví dụ "KH006") → setString, không parseInt
+        if (hd.getMaKH() == null || hd.getMaKH().isBlank()) {
+            ps.setNull(2, java.sql.Types.VARCHAR);   // khách vãng lai
+        } else {
             ps.setString(2, hd.getMaKH());
-            ps.setString(3, hd.getMaNV());
-            ps.setString(4, hd.getTenKHNhan());
-            ps.setString(5, hd.getDiaChiNguoiNhan());
-            ps.setString(6, hd.getSoDienThoaiNguoiNhan());
-            ps.setInt(7, hd.getThanhTien());
-            ps.setInt(8, hd.getTrangThai());
-            ps.setString(9, hd.getIdKhuyenMai());
-            ps.setInt(10, hd.getLoaiGiam());
-            ps.setInt(11, hd.getGiaTriGiam());
-            ps.setTimestamp(12, new Timestamp(hd.getNgayTao().getTime()));
-
-            ps.executeUpdate(); // vì không dùng OUTPUT nữa
-            return hd.getMaHD(); // Trả lại mã mà bạn đã sinh
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return null;
-    }
+        ps.setString(3, hd.getMaNV());
+        ps.setString(4, hd.getTenKHNhan());
+        ps.setString(5, hd.getDiaChiNguoiNhan());
+        ps.setString(6, hd.getSoDienThoaiNguoiNhan());
+        ps.setInt(7, hd.getThanhTien());
+        ps.setInt(8, hd.getTrangThai());
+        ps.setString(9, hd.getIdKhuyenMai());
+        ps.setInt(10, hd.getLoaiGiam());
+        ps.setInt(11, hd.getGiaTriGiam());
+        ps.setTimestamp(12, new Timestamp(hd.getNgayTao().getTime()));
 
-    public String generateMaHD() {
-    String sql = "SELECT MAX(CAST(SUBSTRING(MaHD, 3, LEN(MaHD)) AS INT)) FROM HoaDon";
-    try (Connection c = XJdbc.openConnection();
-         PreparedStatement ps = c.prepareStatement(sql);
-         ResultSet rs = ps.executeQuery()) {
+        ps.executeUpdate();
+        return hd.getMaHD();
 
-        int max = 0;
-        if (rs.next()) {
-            max = rs.getInt(1);
-            if (rs.wasNull()) {
-                max = 0; // bảng rỗng
-            }
-        }
-
-        return String.format("HD%02d", max + 1);
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        throw new RuntimeException("Generate MaHD failed", e);
+    } catch (Exception e) {
+        throw new RuntimeException("Lỗi khi insert hóa đơn: " + e.getMessage(), e);
     }
 }
 
 
+    public String generateMaHD() {
+        String sql = "SELECT MAX(CAST(SUBSTRING(MaHD, 3, LEN(MaHD)) AS INT)) FROM HoaDon";
+        try (Connection c = XJdbc.openConnection(); PreparedStatement ps = c.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            int max = 0;
+            if (rs.next()) {
+                max = rs.getInt(1);
+                if (rs.wasNull()) {
+                    max = 0; // bảng rỗng
+                }
+            }
+
+            return "HD" + (max + 1); // ❌ bỏ %02d, nối trực tiếp
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Generate MaHD failed", e);
+        }
+    }
+
     public List<Object[]> timKiemHoaDon(String keyword) {
         List<Object[]> list = new ArrayList<>();
         String sql = """
-        SELECT 
-            hd.MaHD, 
-            nv.TenNV, 
-            hd.NgayTao, 
-            hd.TenKHNhan,
-            hd.SoDienThoaiNguoiNhan,
-            hd.DiaChiNguoiNhan,
-            hd.TrangThai
-        FROM HoaDon hd
-        JOIN NhanVien nv ON nv.MaNV = hd.MaNV
-        WHERE 
-            hd.MaHD LIKE ? OR
-            nv.TenNV LIKE ? OR
-            CONVERT(VARCHAR, hd.NgayTao, 23) LIKE ? OR
-            hd.TenKHNhan LIKE ? OR
-            hd.SoDienThoaiNguoiNhan LIKE ? OR
-            hd.DiaChiNguoiNhan LIKE ? OR
-              CASE 
-                  WHEN hd.TrangThai = 0 THEN N'Chưa thanh toán'
-                  WHEN hd.TrangThai = 1 THEN N'Đã thanh toán'
-              END LIKE ?
+            SELECT 
+                    hd.MaHD, nv.TenNV, hd.NgayTao,
+                    hd.TenKHNhan, hd.SoDienThoaiNguoiNhan, hd.DiaChiNguoiNhan,
+                    hd.TrangThai
+                FROM HoaDon hd
+                JOIN NhanVien nv ON nv.MaNV = hd.MaNV
+                WHERE hd.TrangThai = 0 AND (     -- << chỉ tìm trong đơn chờ
+                      hd.MaHD LIKE ? OR
+                      nv.TenNV LIKE ? OR
+                      CONVERT(VARCHAR, hd.NgayTao, 23) LIKE ? OR
+                      hd.TenKHNhan LIKE ? OR
+                      hd.SoDienThoaiNguoiNhan LIKE ? OR
+                      hd.DiaChiNguoiNhan LIKE ? OR
+                      CASE 
+                          WHEN hd.TrangThai = 0 THEN N'Chưa thanh toán'
+                          WHEN hd.TrangThai = 1 THEN N'Đã thanh toán'
+                      END LIKE ?
+                )
+                ORDER BY hd.NgayTao DESC
     """;
 
         try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
@@ -228,6 +236,70 @@ public class HoaDonDao {
         }
         return list;
     }
+    // Tìm từ 1 ngày trở đi
+
+    public List<HoaDon> findHoaDonTuNgay(Date tuNgay) {
+        List<HoaDon> list = new ArrayList<>();
+        String sql = "SELECT * FROM HoaDon WHERE NgayTao >= ?";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(tuNgay.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                HoaDon hd = new HoaDon();
+                hd.setMaHD(rs.getString("MaHD"));
+                hd.setMaKH(rs.getString("MaKH"));
+                hd.setMaNV(rs.getString("MaNV"));
+                hd.setTenKHNhan(rs.getString("TenKHNhan"));
+                hd.setDiaChiNguoiNhan(rs.getString("DiaChiNguoiNhan"));
+                hd.setSoDienThoaiNguoiNhan(rs.getString("SoDienThoaiNguoiNhan"));
+                hd.setThanhTien(rs.getInt("ThanhTien"));
+                hd.setTrangThai(rs.getInt("TrangThai"));
+                hd.setIdKhuyenMai(rs.getString("idKhuyenMai"));
+                hd.setLoaiGiam(rs.getInt("LoaiGiam"));
+                hd.setGiaTriGiam(rs.getInt("GiaTriGiam"));
+                hd.setNgayTao(rs.getDate("NgayTao"));
+                list.add(hd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+// Tìm đến 1 ngày (<=)
+    public List<HoaDon> findHoaDonDenNgay(Date denNgay) {
+        List<HoaDon> list = new ArrayList<>();
+        String sql = "SELECT * FROM HoaDon WHERE NgayTao <= ?";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(denNgay.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                HoaDon hd = new HoaDon();
+                hd.setMaHD(rs.getString("MaHD"));
+                hd.setMaKH(rs.getString("MaKH"));
+                hd.setMaNV(rs.getString("MaNV"));
+                hd.setTenKHNhan(rs.getString("TenKHNhan"));
+                hd.setDiaChiNguoiNhan(rs.getString("DiaChiNguoiNhan"));
+                hd.setSoDienThoaiNguoiNhan(rs.getString("SoDienThoaiNguoiNhan"));
+                hd.setThanhTien(rs.getInt("ThanhTien"));
+                hd.setTrangThai(rs.getInt("TrangThai"));
+                hd.setIdKhuyenMai(rs.getString("idKhuyenMai"));
+                hd.setLoaiGiam(rs.getInt("LoaiGiam"));
+                hd.setGiaTriGiam(rs.getInt("GiaTriGiam"));
+                hd.setNgayTao(rs.getDate("NgayTao"));
+                list.add(hd);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
+// Wrapper để tương thích tên gọi bạn dùng trong panel
+    public List<HoaDon> findHoaDonTheoKhoangNgay(Date tuNgay, Date denNgay) {
+        // nếu muốn dùng locTheoNgay sẵn có thì trả về nó
+        return locTheoNgay(tuNgay, denNgay);
+    }
 
     public void updateHoaDonSauThanhToan(String maHD, int thanhTien, String idKhuyenMai, int loaiGiam, int giaTriGiam) {
         String sql = """
@@ -253,5 +325,33 @@ public class HoaDonDao {
             e.printStackTrace();
         }
     }
+
+    public int countPending() {
+        String sql = "SELECT COUNT(*) FROM HoaDon WHERE TrangThai = 0"; // 0 = PENDING
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public int countPendingByStaff(String maNV) {
+        String sql = "SELECT COUNT(*) FROM HoaDon WHERE TrangThai = 0 AND MaNV = ?";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, maNV);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+    
 
 }

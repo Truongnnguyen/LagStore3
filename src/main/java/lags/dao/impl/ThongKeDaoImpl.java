@@ -3,10 +3,11 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package lags.dao.impl;
+
+
 import lags.dao.ThongKeDao;
 import lags.entity.*;
 import lags.util.XJdbc;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

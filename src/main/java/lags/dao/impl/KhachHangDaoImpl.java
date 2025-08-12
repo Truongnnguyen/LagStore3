@@ -198,49 +198,59 @@ public class KhachHangDaoImpl implements KhachHangDao {
 
     @Override
     public String insertAndGetMaKH(KhachHang kh) {
-        // 1. Kiểm tra khách hàng đã tồn tại
-        String sqlCheck = "SELECT MaKH FROM KhachHang WHERE SoDienThoai = ?";
-        try (Connection c = XJdbc.openConnection(); PreparedStatement ps = c.prepareStatement(sqlCheck)) {
-            ps.setString(1, kh.getSoDienThoai());
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    // Nếu đã tồn tại, trả về mã KH cũ
-                    return rs.getString("MaKH");
+        // 1) Nếu có SĐT -> kiểm tra trùng
+        if (kh.getSoDienThoai() != null && !kh.getSoDienThoai().isBlank()) {
+            KhachHang existed = findByPhone(kh.getSoDienThoai());
+            if (existed != null && existed.getMaKH() != null) {
+                return existed.getMaKH(); // tồn tại -> dùng lại
+            }
+        }
+
+        // 2) Sinh mã KH mới (chuỗi NVARCHAR dạng KHxxx)
+        String newMa;
+        String sqlMax = "SELECT MAX(CAST(SUBSTRING(MaKH, 3, LEN(MaKH)) AS INT)) FROM KhachHang WHERE MaKH LIKE 'KH%'";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement psMax = con.prepareStatement(sqlMax); ResultSet rs = psMax.executeQuery()) {
+
+            int max = 0;
+            if (rs.next()) {
+                max = rs.getInt(1);
+                if (rs.wasNull()) {
+                    max = 0;
                 }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Check existing customer failed", e);
+            newMa = "KH" + String.format("%03d", max + 1);
+        } catch (Exception e) {
+            throw new RuntimeException("insertAndGetMaKH failed (generate code): " + e.getMessage(), e);
         }
 
-        // 2. Sinh mã KH mới duy nhất
-        String newMaKH = generateNewMaKH();
-        if (newMaKH == null) {
-            return null;
-        }
+        // 3) Insert khách
+        String sql = "INSERT INTO KhachHang (MaKH, TenKH, SoDienThoai, DiaChi, Email, TrangThai) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection con = XJdbc.openConnection(); PreparedStatement ps = con.prepareStatement(sql)) {
 
-        // 3. Thêm mới
-        String sqlInsert = "INSERT INTO KhachHang (MaKH, TenKH, DiaChi, SoDienThoai, Email, TrangThai) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection c = XJdbc.openConnection(); PreparedStatement ps = c.prepareStatement(sqlInsert)) {
-
-            ps.setString(1, newMaKH);
+            ps.setString(1, newMa);
             ps.setString(2, kh.getTenKH());
-            ps.setString(3, kh.getDiaChi());
-            ps.setString(4, kh.getSoDienThoai());
-            if (kh.getEmail() == null || kh.getEmail().trim().isEmpty()) {
+            if (kh.getSoDienThoai() == null || kh.getSoDienThoai().isBlank()) {
+                ps.setNull(3, java.sql.Types.VARCHAR);
+            } else {
+                ps.setString(3, kh.getSoDienThoai());
+            }
+            if (kh.getDiaChi() == null || kh.getDiaChi().isBlank()) {
+                ps.setNull(4, java.sql.Types.NVARCHAR);
+            } else {
+                ps.setString(4, kh.getDiaChi());
+            }
+            if (kh.getEmail() == null || kh.getEmail().isBlank()) {
                 ps.setNull(5, java.sql.Types.VARCHAR);
             } else {
-                ps.setString(5, kh.getEmail().trim());
+                ps.setString(5, kh.getEmail());
             }
-            ps.setInt(6, kh.getTrangThai());
+            ps.setInt(6, kh.getTrangThai() == 0 ? 1 : kh.getTrangThai()); // default 1
 
-            int rows = ps.executeUpdate();
-            return rows > 0 ? newMaKH : null;
+            ps.executeUpdate();
+            return newMa;
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(null, "Lỗi tạo khách hàng: " + e.getMessage());
-            throw new RuntimeException("Insert and get MaKH failed", e);
+        } catch (Exception e) {
+            throw new RuntimeException("insertAndGetMaKH failed: " + e.getMessage(), e);
         }
     }
 
@@ -256,6 +266,53 @@ public class KhachHangDaoImpl implements KhachHangDao {
             throw new RuntimeException("Generate MaKH failed", e);
         }
         return "KH01"; // fallback nếu bảng trống
+    }
+
+    public KhachHang findByPhone(String sdt) {
+   String sql = "SELECT MaKH, TenKH, SoDienThoai, DiaChi, Email, TrangThai FROM KhachHang WHERE SoDienThoai = ?";
+    try (
+        Connection conn = XJdbc.openConnection();
+        PreparedStatement ps = conn.prepareStatement(sql)
+    ) {
+        ps.setString(1, sdt);
+        ResultSet rs = ps.executeQuery();
+        if (rs.next()) {
+            KhachHang kh = new KhachHang();
+            kh.setMaKH(rs.getString("MaKH"));
+            kh.setTenKH(rs.getString("TenKH"));
+            kh.setSoDienThoai(rs.getString("SoDienThoai"));
+            kh.setDiaChi(rs.getString("DiaChi"));
+            kh.setEmail(rs.getString("Email"));
+            kh.setTrangThai(rs.getInt("TrangThai"));
+            return kh;
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null; // Không tìm thấy
+    }
+
+    @Override
+    public KhachHang findGuest() {
+       String sql = "SELECT TOP 1 MaKH, TenKH, SoDienThoai, DiaChi, Email, TrangThai " +
+                 "FROM KhachHang WHERE TenKH = N'Khách vãng lai' AND SoDienThoai IS NULL ORDER BY MaKH";
+    try (Connection con = XJdbc.openConnection();
+         PreparedStatement ps = con.prepareStatement(sql);
+         ResultSet rs = ps.executeQuery()) {
+        if (rs.next()) {
+            KhachHang k = new KhachHang();
+            k.setMaKH(rs.getString("MaKH"));
+            k.setTenKH(rs.getString("TenKH"));
+            k.setSoDienThoai(rs.getString("SoDienThoai"));
+            k.setDiaChi(rs.getString("DiaChi"));
+            k.setEmail(rs.getString("Email"));
+            k.setTrangThai(rs.getInt("TrangThai"));
+            return k;
+        }
+    } catch (Exception e) {
+        throw new RuntimeException("findGuest failed: " + e.getMessage(), e);
+    }
+    return null;
     }
 
 }

@@ -4,11 +4,14 @@
  */
 package lags.view.LinhKien;
 
+
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import lags.dao.DungLuongDao;
 import lags.entity.DungLuong;
 import lags.util.XDialog;
+import lags.view.SanPhamform;
 
 /**
  *
@@ -21,10 +24,12 @@ public class DungLuongJDialog extends javax.swing.JDialog {
      */
     DungLuongDao dao = new DungLuongDao();
     List<DungLuong> lstDL = List.of();
+    private SanPhamform spf;
 
-    public DungLuongJDialog(java.awt.Frame parent, boolean modal) {
+    public DungLuongJDialog(java.awt.Frame parent, boolean modal, SanPhamform spf) {
         super(parent, modal);
         initComponents();
+        this.spf = spf;
         this.fillToTable();
         this.setForm(0);
     }
@@ -48,8 +53,14 @@ public class DungLuongJDialog extends javax.swing.JDialog {
         btnThem = new javax.swing.JButton();
         btnSua = new javax.swing.JButton();
         btnXoa = new javax.swing.JButton();
+        btnTaoMa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         tblDungLuong.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -75,6 +86,8 @@ public class DungLuongJDialog extends javax.swing.JDialog {
 
         jLabel2.setText("Mã DL");
 
+        txtMaDL.setEditable(false);
+
         jLabel3.setText("Dung Lượng");
 
         btnThem.setText("Thêm");
@@ -98,6 +111,13 @@ public class DungLuongJDialog extends javax.swing.JDialog {
             }
         });
 
+        btnTaoMa.setText("Tạo Mã");
+        btnTaoMa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTaoMaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -117,8 +137,10 @@ public class DungLuongJDialog extends javax.swing.JDialog {
                         .addGap(43, 43, 43)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtMaDL, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(78, 78, 78)
+                        .addComponent(txtMaDL, javax.swing.GroupLayout.PREFERRED_SIZE, 122, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnTaoMa)
+                        .addGap(18, 18, 18)
                         .addComponent(jLabel3)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtDungLuong, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -130,10 +152,14 @@ public class DungLuongJDialog extends javax.swing.JDialog {
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(txtMaDL, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(txtMaDL, javax.swing.GroupLayout.DEFAULT_SIZE, 30, Short.MAX_VALUE))
                     .addComponent(txtDungLuong)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel3)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(btnTaoMa, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(49, 49, 49)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 252, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -171,50 +197,61 @@ public class DungLuongJDialog extends javax.swing.JDialog {
         this.fillToTable();
     }//GEN-LAST:event_btnXoaActionPerformed
 
+    private void btnTaoMaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoMaActionPerformed
+        // TODO add your handling code here:
+        txtMaDL.setText(generateMaSPCT());
+    }//GEN-LAST:event_btnTaoMaActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        spf.open();
+    }//GEN-LAST:event_formWindowClosed
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                DungLuongJDialog dialog = new DungLuongJDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(DungLuongJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the dialog */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                DungLuongJDialog dialog = new DungLuongJDialog(new javax.swing.JFrame(), true);
+//                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+//                    @Override
+//                    public void windowClosing(java.awt.event.WindowEvent e) {
+//                        System.exit(0);
+//                    }
+//                });
+//                dialog.setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSua;
+    private javax.swing.JButton btnTaoMa;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnXoa;
     private javax.swing.JLabel jLabel1;
@@ -253,12 +290,28 @@ public class DungLuongJDialog extends javax.swing.JDialog {
     }
 
     public void create() {
+        if (txtMaDL.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã dung lượng không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtDungLuong.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Dung lượng không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
         DungLuong entity = this.getForm();
         dao.create(entity);
         this.fillToTable();
     }
 
     public void update() {
+        if (txtMaDL.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã dung lượng không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtDungLuong.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Dung lượng không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
         DungLuong entity = this.getForm();
         dao.update(entity);
         this.fillToTable();
@@ -270,6 +323,27 @@ public class DungLuongJDialog extends javax.swing.JDialog {
             dao.deleteByID(id);
             this.fillToTable();
         }
+    }
+    
+    private String generateMaSPCT() {
+        List<DungLuong> list = dao.findAll(); // lấy tất cả sản phẩm từ DB
+        int maxNumber = 0;
+
+        for (DungLuong dl : list) {
+            String ma = dl.getMaDungLuong(); // ví dụ: "SP12"
+            if (ma.toUpperCase().startsWith("DL")) {
+                try {
+                    int number = Integer.parseInt(ma.substring(2));
+                    if (number > maxNumber) {
+                        maxNumber = number;
+                    }
+                } catch (NumberFormatException e) {
+                    // Bỏ qua mã sai định dạng
+                }
+            }
+        }
+
+        return "DL" + (maxNumber + 1);
     }
 
 }

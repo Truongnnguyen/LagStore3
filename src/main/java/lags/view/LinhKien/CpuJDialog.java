@@ -4,11 +4,14 @@
  */
 package lags.view.LinhKien;
 
+
 import java.util.List;
+import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import lags.dao.CPUDao;
 import lags.entity.CPU;
 import lags.util.XDialog;
+import lags.view.SanPhamform;
 
 /**
  *
@@ -21,10 +24,12 @@ public class CpuJDialog extends javax.swing.JDialog {
      */
     CPUDao dao = new CPUDao();
     List<CPU> lstCPU = List.of();
+    private SanPhamform spf;
     
-    public CpuJDialog(java.awt.Frame parent, boolean modal) {
+    public CpuJDialog(java.awt.Frame parent, boolean modal, SanPhamform spf) {
         super(parent, modal);
         initComponents();
+        this.spf = spf;
         this.fillToTable();
         this.setForm(0);
     }
@@ -48,8 +53,14 @@ public class CpuJDialog extends javax.swing.JDialog {
         btnSua = new javax.swing.JButton();
         btnXoa = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
+        btnTaoMa = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         jLabel1.setText("Tên CPU");
 
@@ -72,6 +83,8 @@ public class CpuJDialog extends javax.swing.JDialog {
             }
         });
         jScrollPane1.setViewportView(tblCPU);
+
+        txtMaCPU.setEditable(false);
 
         btnThem.setText("Thêm");
         btnThem.addActionListener(new java.awt.event.ActionListener() {
@@ -98,6 +111,13 @@ public class CpuJDialog extends javax.swing.JDialog {
         jLabel3.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel3.setText("CPU");
 
+        btnTaoMa.setText("Tạo Mã");
+        btnTaoMa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTaoMaActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -116,8 +136,10 @@ public class CpuJDialog extends javax.swing.JDialog {
                         .addGap(59, 59, 59)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
-                        .addComponent(txtMaCPU, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(58, 58, 58)
+                        .addComponent(txtMaCPU, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnTaoMa)
+                        .addGap(20, 20, 20)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(18, 18, 18)
                         .addComponent(txtTenCPU, javax.swing.GroupLayout.PREFERRED_SIZE, 176, javax.swing.GroupLayout.PREFERRED_SIZE)))
@@ -133,7 +155,8 @@ public class CpuJDialog extends javax.swing.JDialog {
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtMaCPU, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtTenCPU, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTenCPU, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTaoMa))
                 .addGap(36, 36, 36)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -169,50 +192,61 @@ public class CpuJDialog extends javax.swing.JDialog {
         this.delete();
     }//GEN-LAST:event_btnXoaActionPerformed
 
+    private void btnTaoMaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoMaActionPerformed
+        // TODO add your handling code here:
+        txtMaCPU.setText(generateMaSPCT());
+    }//GEN-LAST:event_btnTaoMaActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        spf.open();
+    }//GEN-LAST:event_formWindowClosed
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                CpuJDialog dialog = new CpuJDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(CpuJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the dialog */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                CpuJDialog dialog = new CpuJDialog(new javax.swing.JFrame(), true);
+//                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+//                    @Override
+//                    public void windowClosing(java.awt.event.WindowEvent e) {
+//                        System.exit(0);
+//                    }
+//                });
+//                dialog.setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSua;
+    private javax.swing.JButton btnTaoMa;
     private javax.swing.JButton btnThem;
     private javax.swing.JButton btnXoa;
     private javax.swing.JLabel jLabel1;
@@ -251,12 +285,28 @@ public class CpuJDialog extends javax.swing.JDialog {
     }
 
     public void create(){
+        if (txtMaCPU.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã CPU không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtTenCPU.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên CPU không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
         CPU entity=this.getForm();
         dao.create(entity);
         this.fillToTable();
     }
     
     public void update(){
+        if (txtMaCPU.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã CPU không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtTenCPU.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Tên CPU không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
         CPU entity=this.getForm();
         dao.update(entity);
         this.fillToTable();
@@ -268,6 +318,27 @@ public class CpuJDialog extends javax.swing.JDialog {
             dao.deleteByID(id);
             this.fillToTable();
         }
+    }
+    
+    private String generateMaSPCT() {
+        List<CPU> list = dao.findAll(); // lấy tất cả sản phẩm từ DB
+        int maxNumber = 0;
+
+        for (CPU cpu : list) {
+            String ma = cpu.getMaCPU(); // ví dụ: "SP12"
+            if (ma.toUpperCase().startsWith("CPU")) {
+                try {
+                    int number = Integer.parseInt(ma.substring(3));
+                    if (number > maxNumber) {
+                        maxNumber = number;
+                    }
+                } catch (NumberFormatException e) {
+                    // Bỏ qua mã sai định dạng
+                }
+            }
+        }
+
+        return "CPU" + (maxNumber + 1);
     }
 
 }

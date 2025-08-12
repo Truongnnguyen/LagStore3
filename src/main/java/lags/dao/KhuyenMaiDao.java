@@ -88,7 +88,7 @@ public class KhuyenMaiDao {
                 km.setLoaiGiam(rs.getInt("LoaiGiam"));
                 km.setGiaTriGiam(rs.getInt("GiaTriGiam"));
                 km.setGiamToiDa(rs.getInt("GiamToiDa"));
-                km.setDkApDung(rs.getString("DKApDung"));
+//                km.setDkApDung(rs.getString("DKApDung"));
                 km.setTrangThai(rs.getInt("TrangThai"));
                 km.setNgayTao(rs.getDate("NgayTao"));
                 km.setNgayHetHan(rs.getDate("NgayHetHan"));

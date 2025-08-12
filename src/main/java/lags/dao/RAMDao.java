@@ -4,6 +4,7 @@
  */
 package lags.dao;
 
+
 import java.util.List;
 import lags.entity.RAM;
 import lags.util.XJdbc;

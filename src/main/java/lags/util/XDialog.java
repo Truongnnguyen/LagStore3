@@ -1,5 +1,7 @@
 package lags.util;
 
+
+
 import javax.swing.JOptionPane;
 
 public class XDialog {

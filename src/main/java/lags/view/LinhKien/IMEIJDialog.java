@@ -4,9 +4,23 @@
  */
 package lags.view.LinhKien;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.List;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableModel;
+
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+
 import lags.dao.IMEIDao;
+import lags.dao.SanPhamChiTietDao;
 import lags.entity.IMEI;
 import lags.util.XDialog;
 import lags.view.SanPhamform;
@@ -21,10 +35,13 @@ public class IMEIJDialog extends javax.swing.JDialog {
      * Creates new form IMEIJDialog
      */
     IMEIDao dao = new IMEIDao();
+    SanPhamChiTietDao daoscpt = new SanPhamChiTietDao();
     List<IMEI> lstIM = List.of();
-    
-    public IMEIJDialog(java.awt.Frame parent, boolean modal) {
+    private SanPhamform spf;
+
+    public IMEIJDialog(java.awt.Frame parent, boolean modal, SanPhamform spf) {
         super(parent, modal);
+        this.spf = spf;
         initComponents();
     }
 
@@ -49,8 +66,18 @@ public class IMEIJDialog extends javax.swing.JDialog {
         btnThem = new javax.swing.JButton();
         btnSua = new javax.swing.JButton();
         btnXoa = new javax.swing.JButton();
+        btnTaoMa = new javax.swing.JButton();
+        btnThemExcel = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+            public void windowClosing(java.awt.event.WindowEvent evt) {
+                formWindowClosing(evt);
+            }
+        });
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel1.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -59,6 +86,8 @@ public class IMEIJDialog extends javax.swing.JDialog {
         jLabel2.setText("Mã IMEI");
 
         jLabel3.setText("Mã SPCT");
+
+        txtMaIMEI.setEditable(false);
 
         jLabel4.setText("Số IMEI");
 
@@ -101,6 +130,20 @@ public class IMEIJDialog extends javax.swing.JDialog {
             }
         });
 
+        btnTaoMa.setText("Tạo Mã");
+        btnTaoMa.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnTaoMaActionPerformed(evt);
+            }
+        });
+
+        btnThemExcel.setText("Thêm bằng Excel");
+        btnThemExcel.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnThemExcelActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -114,18 +157,22 @@ public class IMEIJDialog extends javax.swing.JDialog {
                         .addGap(18, 18, 18)
                         .addComponent(btnSua)
                         .addGap(18, 18, 18)
-                        .addComponent(btnXoa))
+                        .addComponent(btnXoa)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnThemExcel))
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(jScrollPane1)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 483, Short.MAX_VALUE)
                         .addGroup(layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(jLabel3))
                             .addGap(18, 18, 18)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                .addComponent(txtMaIMEI)
-                                .addComponent(txtMaSPCT, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGap(49, 49, 49)
+                                .addComponent(txtMaSPCT, javax.swing.GroupLayout.DEFAULT_SIZE, 117, Short.MAX_VALUE)
+                                .addComponent(txtMaIMEI))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                            .addComponent(btnTaoMa, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                             .addComponent(txtSoIMEI, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))))
@@ -140,7 +187,8 @@ public class IMEIJDialog extends javax.swing.JDialog {
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(txtMaIMEI)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtSoIMEI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtSoIMEI, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnTaoMa))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -151,7 +199,8 @@ public class IMEIJDialog extends javax.swing.JDialog {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnThem)
                     .addComponent(btnSua)
-                    .addComponent(btnXoa))
+                    .addComponent(btnXoa)
+                    .addComponent(btnThemExcel))
                 .addGap(36, 36, 36))
         );
 
@@ -168,63 +217,90 @@ public class IMEIJDialog extends javax.swing.JDialog {
     private void btnThemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemActionPerformed
         // TODO add your handling code here:
         this.create();
+//        spf.fillSPCT();
     }//GEN-LAST:event_btnThemActionPerformed
 
     private void btnSuaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSuaActionPerformed
         // TODO add your handling code here:
         this.update();
+//        spf.fillSPCT();
     }//GEN-LAST:event_btnSuaActionPerformed
 
     private void btnXoaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnXoaActionPerformed
         // TODO add your handling code here:
         this.delete();
+//        spf.fillSPCT();
     }//GEN-LAST:event_btnXoaActionPerformed
+
+    private void btnTaoMaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnTaoMaActionPerformed
+        // TODO add your handling code here:
+        txtMaIMEI.setText(generateMaSPCT());
+    }//GEN-LAST:event_btnTaoMaActionPerformed
+
+    private void btnThemExcelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnThemExcelActionPerformed
+        // TODO add your handling code here:
+        this.themExcel(evt);
+//        spf.fillSPCT();
+    }//GEN-LAST:event_btnThemExcelActionPerformed
+
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        // TODO add your handling code here:
+        spf.fillSPCT();
+    }//GEN-LAST:event_formWindowClosed
+
+    private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
+        // TODO add your handling code here:
+        spf.open();
+        spf.fillIMEI();
+    }//GEN-LAST:event_formWindowClosing
 
     /**
      * @param args the command line arguments
      */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the dialog */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                IMEIJDialog dialog = new IMEIJDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
-            }
-        });
-    }
+//    public static void main(String args[]) {
+//        /* Set the Nimbus look and feel */
+//        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
+//        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
+//         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
+//         */
+//        try {
+//            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+//                if ("Nimbus".equals(info.getName())) {
+//                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
+//                    break;
+//                }
+//            }
+//        } catch (ClassNotFoundException ex) {
+//            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (InstantiationException ex) {
+//            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (IllegalAccessException ex) {
+//            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
+//            java.util.logging.Logger.getLogger(IMEIJDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+//        }
+//        //</editor-fold>
+//
+//        /* Create and display the dialog */
+//        java.awt.EventQueue.invokeLater(new Runnable() {
+//            public void run() {
+//                IMEIJDialog dialog = new IMEIJDialog(new javax.swing.JFrame(), true);
+//                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
+//                    @Override
+//                    public void windowClosing(java.awt.event.WindowEvent e) {
+//                        System.exit(0);
+//                    }
+//                });
+//                dialog.setVisible(true);
+//            }
+//        });
+//    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnSua;
+    private javax.swing.JButton btnTaoMa;
     private javax.swing.JButton btnThem;
+    private javax.swing.JButton btnThemExcel;
     private javax.swing.JButton btnXoa;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -260,38 +336,156 @@ public class IMEIJDialog extends javax.swing.JDialog {
         txtSoIMEI.setText(tblIMEI.getValueAt(row, 2).toString());
 
     }
-    
-    public void setFormC(String MaSPCT){
+
+    public void setFormC(String MaSPCT) {
         txtMaSPCT.setText(MaSPCT);
     }
-    
-    public IMEI getForm(){
+
+    public IMEI getForm() {
         IMEI entity = new IMEI();
         entity.setMaIMEI(txtMaIMEI.getText());
         entity.setMaSPCT(txtMaSPCT.getText());
         entity.setSoIMEI(txtSoIMEI.getText());
-        
+
         return entity;
     }
-    
-    public void create(){
+
+    public void create() {
+        if (txtMaIMEI.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã IMEI không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtMaSPCT.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã sản phẩm không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtSoIMEI.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Số IMEI không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
         IMEI entity = this.getForm();
         dao.create(entity);
         this.fillTable(entity.getMaSPCT());
-        
+
+        daoscpt.capNhatSoLuongTheoIMEI(entity.getMaSPCT());
+
     }
-    
-    public void update(){
+
+    public void update() {
+        if (txtMaIMEI.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã IMEI không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtMaSPCT.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Mã sản phẩm không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
+        if (txtSoIMEI.getText().trim().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Số IMEI không được để trống!");
+            return; // Dừng lại, không tiếp tục thêm
+        }
         IMEI entity = this.getForm();
-        dao .update(entity);
+        dao.update(entity);
         this.fillTable(txtMaSPCT.getText());
+
+        daoscpt.capNhatSoLuongTheoIMEI(entity.getMaSPCT());
     }
-    
-    public void delete(){
-        if(XDialog.confirm("Bạn thực sự muốn xóa")){
+
+    public void delete() {
+        if (XDialog.confirm("Bạn thực sự muốn xóa")) {
             String id = txtMaIMEI.getText();
             dao.deleteByID(id);
             this.fillTable(txtMaSPCT.getText());
+            daoscpt.capNhatSoLuongTheoIMEI(txtMaSPCT.getText());
+        }
+    }
+
+    private String generateMaSPCT() {
+        List<IMEI> list = dao.findAll(); // lấy tất cả sản phẩm từ DB
+        int maxNumber = 0;
+
+        for (IMEI im : list) {
+            String ma = im.getMaIMEI(); // ví dụ: "SP12"
+            if (ma.toUpperCase().startsWith("IM")) {
+                try {
+                    int number = Integer.parseInt(ma.substring(2));
+                    if (number > maxNumber) {
+                        maxNumber = number;
+                    }
+                } catch (NumberFormatException e) {
+                    // Bỏ qua mã sai định dạng
+                }
+            }
+        }
+
+        return "IM" + (maxNumber + 1);
+    }
+
+    public void themExcel(java.awt.event.ActionEvent evt) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(new FileNameExtensionFilter("Excel Files", "xlsx"));
+        int result = fileChooser.showOpenDialog(this);
+
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            try (FileInputStream fis = new FileInputStream(file); XSSFWorkbook workbook = new XSSFWorkbook(fis)) {
+
+                XSSFSheet sheet = workbook.getSheetAt(0);
+                List<IMEI> imeiList = dao.findAll();
+                int maxNumber = imeiList.stream()
+                        .filter(im -> im.getMaIMEI().toUpperCase().startsWith("IM"))
+                        .mapToInt(im -> {
+                            try {
+                                return Integer.parseInt(im.getMaIMEI().substring(2));
+                            } catch (Exception e) {
+                                return 0;
+                            }
+                        }).max().orElse(0);
+
+                int countAdded = 0;
+                String maSPCT = txtMaSPCT.getText().trim();
+
+                if (maSPCT.isEmpty()) {
+                    JOptionPane.showMessageDialog(this, "Vui lòng nhập Mã SPCT trước khi thêm Excel!");
+                    return;
+                }
+
+                for (Row row : sheet) {
+                    if (row.getRowNum() == 0) {
+                        continue; // Bỏ qua tiêu đề nếu có
+                    }
+                    Cell imeiCell = row.getCell(0);
+                    if (imeiCell == null) {
+                        continue;
+                    }
+
+                    String soIMEI = imeiCell.toString().trim();
+                    if (soIMEI.isEmpty()) {
+                        continue;
+                    }
+
+                    maxNumber++;
+                    String newMaIMEI = "IM" + maxNumber;
+
+                    IMEI imei = new IMEI();
+                    imei.setMaIMEI(newMaIMEI);
+                    imei.setMaSPCT(maSPCT);
+                    imei.setSoIMEI(soIMEI);
+
+                    dao.create(imei);
+                    countAdded++;
+                }
+
+                // Cập nhật bảng và số lượng
+                fillTable(maSPCT);
+                daoscpt.capNhatSoLuongTheoIMEI(maSPCT);
+
+                JOptionPane.showMessageDialog(this, "Đã thêm " + countAdded + " IMEI từ file Excel!");
+
+            } catch (IOException ex) {
+                JOptionPane.showMessageDialog(this, "Lỗi khi đọc file Excel: " + ex.getMessage());
+                ex.printStackTrace();
+            }
         }
     }
 
