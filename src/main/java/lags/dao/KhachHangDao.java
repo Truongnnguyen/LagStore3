@@ -1,5 +1,8 @@
 package lags.dao;
 
+
+
+
 import lags.entity.KhachHang;
 import java.util.List;
 
