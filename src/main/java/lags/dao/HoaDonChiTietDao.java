@@ -118,5 +118,33 @@ public class HoaDonChiTietDao {
         }
         return "HDCT1"; // Nếu bảng trống hoặc lỗi thì trả về HDCT1
     }
+    public List<Object[]> getChiTietByMaHD(String maHD) {
+    List<Object[]> list = new ArrayList<>();
+    String sql = """
+        SELECT sp.MaSP, sp.TenSP, hdct.SoLuong, hdct.DonGiaBan
+        FROM HoaDonChiTiet hdct
+        JOIN SanPhamChiTiet spct ON hdct.MaSPCT = spct.MaSPCT
+        JOIN SanPham sp ON spct.MaSP = sp.MaSP
+        WHERE hdct.MaHD = ?
+    """;
+    try (Connection con = XJdbc.openConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, maHD);
+        try (ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                list.add(new Object[]{
+                    rs.getString("MaSP"),
+                    rs.getString("TenSP"),
+                    rs.getInt("SoLuong"),
+                    rs.getInt("DonGiaBan")
+                });
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return list;
+}
+
 
 }

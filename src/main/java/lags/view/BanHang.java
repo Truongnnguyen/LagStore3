@@ -288,6 +288,11 @@ public class BanHang extends javax.swing.JPanel {
                 "Mã hóa đơn", "Tên nhân viên", "Ngày tạo", "Tên KH", "SDT", "Địa chỉ", "Trạng thái"
             }
         ));
+        tblHoaDonCho.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tblHoaDonChoMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(tblHoaDonCho);
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
@@ -989,6 +994,45 @@ imeiDao.releaseImeis(allImeis);
     private void tblGioHangMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblGioHangMouseClicked
         // TODO add your handling code here:
     }//GEN-LAST:event_tblGioHangMouseClicked
+
+    private void tblHoaDonChoMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tblHoaDonChoMouseClicked
+        // TODO add your handling code here:
+          int row = tblHoaDonCho.getSelectedRow();
+    if (row == -1) {
+        return;
+    }
+
+    // Lấy mã HĐ từ bảng
+    String maHD = tblHoaDonCho.getValueAt(row, 0).toString();
+    maHDDangTao = maHD;
+
+    // Lấy thông tin hóa đơn + khách hàng
+    HoaDon hd = dao.findById(maHD);
+    if (hd != null) {
+        txtKH.setText(hd.getTenKHNhan() != null ? hd.getTenKHNhan() : "");
+        txtSDT.setText(hd.getSoDienThoaiNguoiNhan() != null ? hd.getSoDienThoaiNguoiNhan() : "");
+        txtDiaChi.setText(hd.getDiaChiNguoiNhan() != null ? hd.getDiaChiNguoiNhan() : "");
+//        txtEmail.setText(hd.getEmailNguoiNhan() != null ? hd.getEmailNguoiNhan() : "");
+    }
+
+    // Load giỏ hàng
+    DefaultTableModel modelGH = (DefaultTableModel) tblGioHang.getModel();
+    modelGH.setRowCount(0);
+    HoaDonChiTietDao hdctDao = new HoaDonChiTietDao();
+    List<Object[]> chiTietList = hdctDao.getChiTietByMaHD(maHD);
+    for (Object[] ct : chiTietList) {
+        String maSP = (String) ct[0];
+        String tenSP = (String) ct[1];
+        int soLuong = (int) ct[2];
+        int donGia = (int) ct[3];
+        modelGH.addRow(new Object[]{
+            maSP, tenSP, soLuong, formatVND(donGia * soLuong), Boolean.FALSE
+        });
+    }
+
+    updateTongTien();
+    updateInvoiceUIState();
+    }//GEN-LAST:event_tblHoaDonChoMouseClicked
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

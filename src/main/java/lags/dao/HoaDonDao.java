@@ -352,6 +352,37 @@ public class HoaDonDao {
         }
         return 0;
     }
+    public HoaDon findById(String maHD) {
+    String sql = """
+        SELECT MaHD, MaNV, MaKH, TenKHNhan, SoDienThoaiNguoiNhan, DiaChiNguoiNhan, EmailNguoiNhan, ThanhTien, TrangThai, NgayTao
+        FROM HoaDon
+        WHERE MaHD = ?
+    """;
+    try (Connection con = XJdbc.openConnection();
+         PreparedStatement ps = con.prepareStatement(sql)) {
+        ps.setString(1, maHD);
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                HoaDon hd = new HoaDon();
+                hd.setMaHD(rs.getString("MaHD"));
+                hd.setMaNV(rs.getString("MaNV"));
+                hd.setMaKH(rs.getString("MaKH"));
+                hd.setTenKHNhan(rs.getString("TenKHNhan"));
+                hd.setSoDienThoaiNguoiNhan(rs.getString("SoDienThoaiNguoiNhan"));
+                hd.setDiaChiNguoiNhan(rs.getString("DiaChiNguoiNhan"));
+//                hd.set(rs.getString("EmailNguoiNhan"));
+                hd.setThanhTien(rs.getInt("ThanhTien"));
+                hd.setTrangThai(rs.getInt("TrangThai"));
+                hd.setNgayTao(rs.getDate("NgayTao"));
+                return hd;
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+
     
 
 }
